@@ -18,3 +18,10 @@ X_TRAIN_KEY = 'X_train'
 Y_TRAIN_KEY = 'y_train'
 X_TEST_KEY  = "X_test"
 IDS_KEY     = "ids"
+
+
+# MODELS
+LOGISTIC_REGRESSION = 'logistic_regression'
+SVM = 'svm'
+RANDOM_FOREST = 'random_forest'
+XGBOOST = 'xgboost'
