@@ -19,7 +19,6 @@ from src.features.preprocessing import apply_preprocessing
 from src.models.train_model import train_model
 from src.models.predict import predict_model
 from src.utils.timer import Timer
-from src.data.data_exploration import preview_data
 
 
 # -----------------------------------
@@ -56,7 +55,7 @@ logger.info(f"Loaded config: {args.config}")
 # -----------------------------------
 # Load training and test data
 # -----------------------------------
-with Timer("Loading train data..."):
+with Timer("Loading training data..."):
     X_train, metadata_train, y_train = load_train()
 
 with Timer("Loading test data..."):
@@ -74,20 +73,17 @@ with Timer("Preprocessing data..."):
         cfg=cfg
     )
 
-
 # -----------------------------------
 # Train model
 # -----------------------------------
 with Timer("Training model..."):
     model = train_model(X_train, y_train, cfg)
 
-
 # -----------------------------------
 # Predict on test
 # -----------------------------------
 with Timer("Predicting on test set..."):
     preds = predict_model(model, X_test, metadata_test)
-    
 
 # -----------------------------------
 # Save submission file
