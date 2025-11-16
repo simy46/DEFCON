@@ -10,6 +10,7 @@ model:
   n_jobs: -1
   random_state: 42
   eval_metric: logloss
+  cv_folds: 5
 
 preprocessing:
   normalize: false

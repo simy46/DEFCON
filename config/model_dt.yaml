@@ -5,6 +5,7 @@ model:
   min_samples_split: 10
   min_samples_leaf: 5
   random_state: 42
+  cv_folds: 5
 
 preprocessing:
   normalize: false
