@@ -9,6 +9,14 @@ model:
 preprocessing:
   normalize: false
 
+  one_hot_encode:
+    enabled: true
+    columns:
+      - Isolation source
+      - Testing standard
+      - Isolation type
+      - Location
+
   pca:
     enabled: false
     svd_solver: randomized

@@ -11,6 +11,14 @@ preprocessing:
   normalize: true
   normalize_with_mean: false
 
+  one_hot_encode:
+    enabled: true
+    columns:
+      - Isolation source
+      - Testing standard
+      - Isolation type
+      - Location
+
   pca:
     enabled: true
     n_components: 50
