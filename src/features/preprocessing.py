@@ -34,6 +34,7 @@ def apply_preprocessing(
 
     logger.info(f"Initial shapes: X_train={X_train.shape}, X_test={X_test.shape}")
 
+
     # ---------------------------------------------
     # One-Hot Encoding (metadata)
     # ---------------------------------------------
@@ -65,16 +66,6 @@ def apply_preprocessing(
         X_train, X_test = select_first_features(X_train, X_test, k)
         logger.info(f"After first-k selection: X_train={X_train.shape}, X_test={X_test.shape}")
 
-    # ---------------------------------------------
-    # PCA
-    # ---------------------------------------------
-    if pca["enabled"]:
-        n_components = pca["n_components"]
-        svd_solver = pca.get("svd_solver", "randomized")
-        logger.info(f"Applying PCA(n_components={n_components}) ...")
-        X_train, X_test = apply_pca(X_train, X_test, n_components, svd_solver)
-        logger.info(f"After PCA: X_train={X_train.shape}, X_test={X_test.shape}")
-
 
     # ---------------------------------------------
     # Normalization
@@ -85,6 +76,7 @@ def apply_preprocessing(
         X_train, X_test = normalize_data(X_train, X_test, with_mean)
         logger.info(f"After normalization: X_train={X_train.shape}, X_test={X_test.shape}")
 
+    
     # ---------------------------------------------
     # Variance threshold
     # ---------------------------------------------
@@ -94,6 +86,15 @@ def apply_preprocessing(
         X_train, X_test = filter_low_variance_features(X_train, X_test, threshold)
         logger.info(f"After VarianceThreshold: X_train={X_train.shape}, X_test={X_test.shape}")
 
+    # ---------------------------------------------
+    # PCA
+    # ---------------------------------------------
+    if pca["enabled"]:
+        n_components = pca["n_components"]
+        svd_solver = pca.get("svd_solver", "randomized")
+        logger.info(f"Applying PCA(n_components={n_components}) ...")
+        X_train, X_test = apply_pca(X_train, X_test, n_components, svd_solver)
+        logger.info(f"After PCA: X_train={X_train.shape}, X_test={X_test.shape}")
 
     logger.info("Preprocessing complete.")
     return X_train, X_test

@@ -19,6 +19,7 @@ from src.features.preprocessing import apply_preprocessing
 from src.models.train_model import train_model
 from src.models.predict import predict_model
 from src.utils.timer import Timer
+from src.data.data_exploration import preview_data
 
 
 # -----------------------------------
@@ -66,6 +67,23 @@ with Timer("Loading test data..."):
 # -----------------------------------
 with Timer("Preprocessing data..."):
     X_train, X_test = apply_preprocessing(X_train, X_test, cfg)
+
+import matplotlib.pyplot as plt
+
+def plot_pca_2d(X_pca, y=None):
+    plt.figure(figsize=(6,6))
+    if y is None:
+        plt.scatter(X_pca[:,0], X_pca[:,1], s=5)
+    else:
+        plt.scatter(X_pca[:,0], X_pca[:,1], c=y, s=5, cmap="viridis")
+    plt.xlabel("PC1")
+    plt.ylabel("PC2")
+    plt.title("PCA Projection (2D)")
+    plt.show()
+
+
+plot_pca_2d(X_train)
+print(preview_data(X_train))
 
 # -----------------------------------
 # Train model
