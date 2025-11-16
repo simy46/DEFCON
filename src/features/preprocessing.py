@@ -3,6 +3,8 @@ import numpy as np
 from numpy.typing import NDArray
 from pandas import DataFrame
 
+from config.consts import LOG_FILE_PREFIX
+
 from .normalization import normalize_data
 from .feature_selection import (
     filter_low_variance_features,
@@ -11,7 +13,7 @@ from .feature_selection import (
 from .pca import apply_pca
 from .encode_metadata import encode_metadata
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(LOG_FILE_PREFIX)
 
 
 def apply_preprocessing(
