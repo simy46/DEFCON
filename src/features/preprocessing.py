@@ -48,9 +48,7 @@ def apply_preprocessing(
             columns
         )
 
-        logger.info(
-            f"Metadata encoded: train_meta={train_meta_enc.shape}, test_meta={test_meta_enc.shape}"
-        )
+        logger.info(f"Metadata encoded: train_meta={train_meta_enc.shape}, test_meta={test_meta_enc.shape}"        )
 
         X_train = np.hstack([X_train, train_meta_enc])
         X_test = np.hstack([X_test, test_meta_enc])
