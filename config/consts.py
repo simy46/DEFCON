@@ -23,6 +23,9 @@ IDS_KEY     = "ids"
 # LOGS FILE PREFIX
 LOG_FILE_PREFIX = "pipeline"
 
+# OUTPUTS DIR
+OUTPUT_DIR = "outputs"
+
 # MODELS
 LOGISTIC_REGRESSION = 'logistic_regression'
 SVM = 'svm'

@@ -11,7 +11,6 @@
 
 import argparse
 import yaml
-import pandas as pd
 
 from src.utils.logging_utils import get_logger
 from src.data.data_loader import load_train, load_test
@@ -19,6 +18,7 @@ from src.features.preprocessing import apply_preprocessing
 from src.models.train_model import train_model
 from src.models.predict import predict_model
 from src.utils.timer import Timer
+from src.utils.save_submission import save_submission
 
 
 # -----------------------------------
@@ -90,12 +90,11 @@ with Timer("Predicting on test set..."):
         timestamp=timestamp # added timestamp just for the submission_timestamp.csv file name
     ) 
 
+
 # -----------------------------------
-# Save submission file
+# Save submission files
 # -----------------------------------
-logger.info("Saving submission.csv...")
-submission = pd.DataFrame({
-    "label": preds.astype(int)   # Kaggle requires 0/1 integers
-})
-submission.to_csv("submission.csv", index=False)
+logger.info("Saving submission files...")
+submission_timestamp_path = save_submission(preds, timestamp)
+logger.info(f"Created: {submission_timestamp_path}")
 logger.info("Pipeline completed successfully.")

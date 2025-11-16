@@ -1,17 +1,20 @@
-import pandas as pd
-from datetime import datetime
-import os
+from numpy.typing import NDArray
+import numpy as np
+from pandas import DataFrame
 
-def predict_model(model, X_test, metadata_test, timestamp):
-    preds = model.predict(X_test).astype(int)
+def predict_model(model, X_test: NDArray) -> NDArray:
+    """
+    Run predictions on the test set using the trained model.
 
-    df = pd.DataFrame({
-        "label": preds
-    })
+    Parameters
+    model : any
+        Trained scikit-learn compatible model with predict().
+    X_test : NDArray
+        Test feature matrix.
 
-    os.makedirs("outputs", exist_ok=True)
-    timestamp = datetime.now().strftime("%d-%H-%M")
-    filename = f"outputs/submission_{timestamp}.csv"
-    df.to_csv(filename, index=False)
-
-    return df
+    Returns
+    NDArray[int]
+        Vector of predictions (0/1).
+    """
+    preds: NDArray = model.predict(X_test)
+    return preds.astype(int)
