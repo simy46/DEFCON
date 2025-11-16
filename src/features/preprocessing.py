@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 from numpy.typing import NDArray
 
 from .normalization import normalize_data
@@ -7,6 +8,7 @@ from .feature_selection import (
     select_first_features
 )
 from .pca import apply_pca
+from .encode_metadata import encode_metadata
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +16,8 @@ logger = logging.getLogger(__name__)
 def apply_preprocessing(
     X_train: NDArray,
     X_test: NDArray,
+    metadata_train,
+    metadata_test,
     cfg: dict
 ) -> tuple[NDArray, NDArray]:
     """
@@ -22,15 +26,38 @@ def apply_preprocessing(
     pp = cfg["preprocessing"]
 
     # attributes
-    variance_threshold = pp["variance_threshold"]
-    pca = pp["pca"]
     select_first_k = pp["select_first_k"]
+    pca = pp["pca"]
+    ohe = pp["one_hot_encode"]
     normalize = pp["normalize"]
+    variance_threshold = pp["variance_threshold"]
 
     logger.info(f"Initial shapes: X_train={X_train.shape}, X_test={X_test.shape}")
 
     # ---------------------------------------------
-    # First-k feature selection
+    # One-Hot Encoding (metadata)
+    # ---------------------------------------------
+    if ohe["enabled"]:
+        columns = ohe["columns"]
+        logger.info(f"Applying One-Hot Encoding on metadata columns: {columns} ...")
+        
+        train_meta_enc, test_meta_enc = encode_metadata(
+            metadata_train,
+            metadata_test,
+            columns
+        )
+
+        logger.info(
+            f"Metadata encoded: train_meta={train_meta_enc.shape}, test_meta={test_meta_enc.shape}"
+        )
+
+        X_train = np.hstack([X_train, train_meta_enc])
+        X_test = np.hstack([X_test, test_meta_enc])
+
+        logger.info(f"After metadata concat: X_train={X_train.shape}, X_test={X_test.shape}")
+
+    # ---------------------------------------------
+    # First-k feature selection (optional)
     # ---------------------------------------------
     if select_first_k["enabled"]:
         k = select_first_k["k"]
