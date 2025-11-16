@@ -14,7 +14,7 @@ def get_logger():
 
     os.makedirs("logs", exist_ok=True)
 
-    timestamp = datetime.now().strftime("%d-%H-%M")
+    timestamp = datetime.now().strftime("%d-%H-%M-%S")
     log_filename = f"logs/{LOG_FILE_PREFIX}_{timestamp}.log"
 
     formatter = logging.Formatter(
@@ -30,4 +30,4 @@ def get_logger():
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
 
-    return logger
+    return logger, timestamp

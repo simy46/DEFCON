@@ -49,7 +49,7 @@ args = parser.parse_args()
 with open(args.config, "r") as f:
     cfg = yaml.safe_load(f)
 
-logger = get_logger()
+logger, timestamp = get_logger()
 logger.info(f"Loaded config: {args.config}")
 
 # -----------------------------------
@@ -83,7 +83,12 @@ with Timer("Training model..."):
 # Predict on test
 # -----------------------------------
 with Timer("Predicting on test set..."):
-    preds = predict_model(model, X_test, metadata_test)
+    preds = predict_model(
+        model=model, 
+        X_test=X_test, 
+        metadata_test=metadata_test, 
+        timestamp=timestamp # added timestamp just for the submission_timestamp.csv file name
+    ) 
 
 # -----------------------------------
 # Save submission file
