@@ -1,64 +1,63 @@
-from sklearn.model_selection import train_test_split
-import time
-from Discovering import explore_data
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, f1_score
+import logging
 import numpy as np
-import pandas as pd
-from consts.consts import METADATA_TRAIN_PATH, TRAIN_NPZ_PATH
-from xgboost import XGBClassifier
-from Finding_model import split_data
+from sklearn.metrics import f1_score, accuracy_score
+from sklearn.model_selection import StratifiedKFold
+from .model_selection import build_model
+from config.consts import LOG_FILE_PREFIX
 
-if __name__ == "__main__":
 
-    # Total time tracking
-    total_start_time = time.time()
+logger = logging.getLogger(LOG_FILE_PREFIX)
 
-    # Chemins des fichiers train
-    npz_path_train = "train_pca_50_components.npz"
+def train_model(X_train, y_train, cfg):
+    """
+    Train model using StratifiedKFold cross-validation.
+    Refit the model on full training data at the end.
+    """
 
-    # Charger les données
-    X_train, X_metadata, y_train = explore_data(METADATA_TRAIN_PATH, npz_path_train, ['X_pca'])
+    model_cfg = cfg["model"]
+    random_state = cfg["random_state"]
+    k_folds = cfg["cv_folds"]
 
-    y_train = np.load(TRAIN_NPZ_PATH)['y_train']
+    model = build_model(model_cfg)
 
-    # Diviser les données
-    X_tr, X_val, y_tr, y_val = split_data(X_train, y_train, test_size=0.2, random_state=42)
+    cv = StratifiedKFold(n_splits=k_folds, shuffle=True, random_state=random_state)
 
-    parametres = {'n_estimators': 434, 'max_depth': 46, 'min_samples_split': 6, 'min_samples_leaf': 8}
+    fold_f1 = []
+    fold_f1_train = []
 
-    model = RandomForestClassifier(n_estimators=parametres['n_estimators'],
-                                   max_depth=parametres['max_depth'],
-                                   min_samples_split=parametres['min_samples_split'],
-                                   min_samples_leaf=parametres['min_samples_leaf'],
-                                   class_weight="balanced",
-                                   n_jobs=-1,
-                                   random_state=42)
+    logger.info(f"Starting {k_folds}-fold cross-validation...")
 
-    model.fit(X_tr, y_tr)
-    y_pred = model.predict(X_val)
-    y_proba = model.predict_proba(X_val)[:, 1]
+    for fold_idx, (tr_idx, val_idx) in enumerate(cv.split(X_train, y_train)):
+        logger.info(f"--- Fold {fold_idx + 1}/{k_folds} ---")
 
-    print("f1_score sur le set de validation :")
-    print(f1_score(y_val, y_pred))
+        X_tr, X_val = X_train[tr_idx], X_train[val_idx]
+        y_tr, y_val = y_train[tr_idx], y_train[val_idx]
 
-    #X_test, X_metadata_test, y_test = explore_data(METADATA_TEST_PATH, "test_pca.npz", ['X_pca'])
+        # Train
+        model.fit(X_tr, y_tr)
 
-    #print(X_metadata_test)
+        # Predictions
+        y_pred = model.predict(X_val)
+        y_pred_train = model.predict(X_tr)
 
-    #y_test_pred = model.predict(X_test)
-    
-    # Sauvegarder les prédictions dans un fichier CSV
-    #submission_df = pd.DataFrame({
-    #    "id": X_metadata_test["ID"],  # 0,1,2,...,1091
-    #    "label": y_test_pred            # tes prédictions
-    #})
-    
-    #submission_df.to_csv("submission.csv", index=False)
+        # Metrics
+        f1 = f1_score(y_val, y_pred)
+        f1_tr = f1_score(y_tr, y_pred_train)
 
-    #print(submission_df.shape)  # Doit afficher (1092, 1)
-    #print(submission_df.head())
-    #print("✅ Prédictions sauvegardées dans test_predictions.csv")
+        fold_f1.append(f1)
+        fold_f1_train.append(f1_tr)
 
+        logger.info(f"  Train F1: {f1_tr:.4f}")
+        logger.info(f"  Valid F1: {f1:.4f}")
+        logger.info(f"  Gap (train - val): {f1_tr - f1:.4f}")
+
+    # Summary
+    logger.info("Cross-validation complete.")
+    logger.info(f"Mean F1 = {np.mean(fold_f1):.4f}")
+    logger.info(f"Std F1  = {np.std(fold_f1):.4f}")
+
+    # Refit final model
+    logger.info("Refitting final model on full dataset...")
+    model.fit(X_train, y_train)
+
+    return model
