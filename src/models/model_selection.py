@@ -36,12 +36,20 @@ def build_model(model_cfg):
 
     if name == XGBOOST:
         return XGBClassifier(
-            n_estimators=model_cfg["n_estimators"],
-            max_depth=model_cfg["max_depth"],
-            learning_rate=model_cfg["learning_rate"],
-            subsample=model_cfg["subsample"],
-            colsample_bytree=model_cfg["colsample_bytree"],
-            eval_metric=model_cfg["eval_metric"]
-        )
+        booster=model_cfg.get("booster", "gbtree"),
+        eta=model_cfg.get("eta", 0.1),
+        max_depth=model_cfg["max_depth"],
+        min_child_weight=model_cfg.get("min_child_weight", 1),
+        subsample=model_cfg["subsample"],
+        colsample_bytree=model_cfg["colsample_bytree"],
+        reg_lambda=model_cfg.get("lambda", 1.0),
+        reg_alpha=model_cfg.get("alpha", 0.0),
+        n_estimators=model_cfg["n_estimators"],
+        tree_method=model_cfg.get("tree_method", "hist"),
+        max_bin=model_cfg.get("max_bin", 256),
+        n_jobs=model_cfg.get("n_jobs", -1),
+        random_state=model_cfg.get("random_state", 42),
+        eval_metric=model_cfg.get("eval_metric", "logloss")
+    )
 
     raise ValueError(f"Unknown model name: {name}")
