@@ -94,7 +94,7 @@ if __name__ == "__main__":
     # Réduire la dimensionnalité avec PCA
     start_time = time.time()  # Démarre le chronomètre
 
-    X_reduced_test = reduce_dimensions(X_test, n_components=50)
+    X_reduced_train = reduce_dimensions(X_train, n_components=100)
 
     end_time = time.time()    # Arrête le chronomètre
     elapsed = end_time - start_time
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     # Normaliser les données
     start_time = time.time()  # Démarre le chronomètre
 
-    X_normalized_test = normalize_data(X_reduced_test)
+    X_normalized_train = normalize_data(X_reduced_train)
 
     end_time = time.time()    # Arrête le chronomètre
     elapsed = end_time - start_time
@@ -117,6 +117,6 @@ if __name__ == "__main__":
     print(f"⏱️ Temps total de traitement : {total_elapsed:.2f} secondes")
 
     # Sauvegarder les données PCA (et normalisées)
-    save_pca_data(X_normalized_test, None, output_prefix="test_pca")
+    save_pca_data(X_normalized_train, None, output_prefix="train_pca_100_components")
 
     
