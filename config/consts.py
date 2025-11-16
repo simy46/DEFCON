@@ -20,6 +20,9 @@ X_TEST_KEY  = "X_test"
 IDS_KEY     = "ids"
 
 
+# LOGS FILE PREFIX
+LOG_FILE_PREFIX = "pipeline"
+
 # MODELS
 LOGISTIC_REGRESSION = 'logistic_regression'
 SVM = 'svm'
