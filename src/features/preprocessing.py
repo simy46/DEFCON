@@ -1,6 +1,7 @@
 import logging
 import numpy as np
 from numpy.typing import NDArray
+from pandas import DataFrame
 
 from .normalization import normalize_data
 from .feature_selection import (
@@ -16,8 +17,8 @@ logger = logging.getLogger(__name__)
 def apply_preprocessing(
     X_train: NDArray,
     X_test: NDArray,
-    metadata_train,
-    metadata_test,
+    metadata_train: DataFrame,
+    metadata_test: DataFrame,
     cfg: dict
 ) -> tuple[NDArray, NDArray]:
     """
