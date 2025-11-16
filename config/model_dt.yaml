@@ -1,0 +1,22 @@
+model:
+  name: decision_tree
+  criterion: gini
+  max_depth: 20
+  min_samples_split: 10
+  min_samples_leaf: 5
+  random_state: 42
+
+preprocessing:
+  normalize: false
+
+  pca:
+    enabled: false
+    svd_solver: randomized
+
+  variance_threshold:
+    enabled: true
+    threshold: 0.001
+
+  select_first_k:
+    enabled: true
+    k: 100000
