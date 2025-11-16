@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# Results
+outputs/*
+
 # Heavy data
 data/test.npz
 data/train.npz

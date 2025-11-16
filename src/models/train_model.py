@@ -15,8 +15,8 @@ def train_model(X_train, y_train, cfg):
     """
 
     model_cfg = cfg["model"]
-    random_state = cfg["random_state"]
-    k_folds = cfg["cv_folds"]
+    random_state = model_cfg["random_state"]
+    k_folds = model_cfg["cv_folds"]
 
     model = build_model(model_cfg)
 
