@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from config.consts import METADATA_TRAIN_PATH, TRAIN_NPZ_PATH, X_TRAIN_KEY, Y_TRAIN_KEY
 
 
-def explore_data():
+def get_train_data():
     """
     Load metadata CSV and NPZ files.
     
@@ -20,18 +20,19 @@ def explore_data():
         metadata : pd.DataFrame
         y : np.ndarray
     """
-    metadata = pd.read_csv(METADATA_TRAIN_PATH)
     data = np.load(TRAIN_NPZ_PATH)
 
-    X = data[X_TRAIN_KEY]
-    y = data[Y_TRAIN_KEY]
+    X_train = data[X_TRAIN_KEY]
+    y_train = data[Y_TRAIN_KEY]
 
     print(f"Data loaded:")
-    print(f"  X shape        : {X.shape}")
-    print(f"  y shape        : {y.shape}")
-    print(f"  metadata shape : {metadata.shape}")
+    print(f"  X_train shape        : {X_train.shape}")
+    print(f"  y_train shape        : {y_train.shape}")
 
-    return X, metadata, y
+    return X_train, y_train
+
+def get_metadata():
+    return pd.read_csv(METADATA_TRAIN_PATH)
 
 
 def analyze_metadata(metadata, ignore_cols=None, max_display=20):
@@ -77,14 +78,19 @@ def visualize_y(y, title="Distribution of target y"):
     plt.tight_layout()
     plt.show()
 
+def preview_data(X, n_rows=5):
+    df = pd.DataFrame(X, columns=[f"Feature{i+1}" for i in range(X.shape[1])])
+    return df.head(n_rows)
+
 
 
 ## ENTRY POINT
-X, meta, y = explore_data()
+X_train, y_train = get_train_data()
+meta = get_metadata()
 
 analyze_metadata(meta)
-visualize_y(y)
+visualize_y(y_train)
 
 print("\nCheck for invalid values:")
-print("  NaN in X:", np.isnan(X).any())
-print("  Inf in X:", np.isinf(X).any())
+print("  NaN in X:", np.isnan(X_train).any())
+print("  Inf in X:", np.isinf(X_train).any())
