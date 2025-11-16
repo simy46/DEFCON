@@ -83,6 +83,18 @@ def preview_data(X, n_rows=5):
     return df.head(n_rows)
 
 
+def plot_pca_2d(X_pca, y=None):
+    plt.figure(figsize=(6,6))
+    if y is None:
+        plt.scatter(X_pca[:,0], X_pca[:,1], s=5)
+    else:
+        plt.scatter(X_pca[:,0], X_pca[:,1], c=y, s=5, cmap="viridis")
+    plt.xlabel("PC1")
+    plt.ylabel("PC2")
+    plt.title("PCA Projection (2D)")
+    plt.show()
+
+
 
 ## ENTRY POINT
 X_train, y_train = get_train_data()
@@ -90,6 +102,8 @@ meta = get_metadata()
 
 analyze_metadata(meta)
 visualize_y(y_train)
+plot_pca_2d(X_train)
+print(preview_data(X_train))
 
 print("\nCheck for invalid values:")
 print("  NaN in X:", np.isnan(X_train).any())

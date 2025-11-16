@@ -66,24 +66,14 @@ with Timer("Loading test data..."):
 # Preprocessing
 # -----------------------------------
 with Timer("Preprocessing data..."):
-    X_train, X_test = apply_preprocessing(X_train, X_test, cfg)
+    X_train, X_test = apply_preprocessing(
+        X_train=X_train, 
+        X_test=X_test, 
+        metadata_train=metadata_train, 
+        metadata_test=metadata_test, 
+        cfg=cfg
+    )
 
-import matplotlib.pyplot as plt
-
-def plot_pca_2d(X_pca, y=None):
-    plt.figure(figsize=(6,6))
-    if y is None:
-        plt.scatter(X_pca[:,0], X_pca[:,1], s=5)
-    else:
-        plt.scatter(X_pca[:,0], X_pca[:,1], c=y, s=5, cmap="viridis")
-    plt.xlabel("PC1")
-    plt.ylabel("PC2")
-    plt.title("PCA Projection (2D)")
-    plt.show()
-
-
-plot_pca_2d(X_train)
-print(preview_data(X_train))
 
 # -----------------------------------
 # Train model
@@ -91,11 +81,13 @@ print(preview_data(X_train))
 with Timer("Training model..."):
     model = train_model(X_train, y_train, cfg)
 
+
 # -----------------------------------
 # Predict on test
 # -----------------------------------
 with Timer("Predicting on test set..."):
     preds = predict_model(model, X_test, metadata_test)
+    
 
 # -----------------------------------
 # Save submission file
