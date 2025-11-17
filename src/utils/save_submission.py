@@ -2,7 +2,7 @@ import pandas as pd
 import os
 from config.consts import OUTPUT_DIR
 
-def save_submission(preds, timestamp: str) -> str:
+def save_submission(preds, metadata_test, timestamp: str) -> str:
     """
     Save predictions to a timestamped CSV file.
 
@@ -17,6 +17,12 @@ def save_submission(preds, timestamp: str) -> str:
         Path to the saved CSV file.
     """
     os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    df = pd.DataFrame({
+        "id": metadata_test["ID"].values,
+        "label": preds.astype(int)
+    })
+
 
     filename = f"{OUTPUT_DIR}/submission_{timestamp}.csv"
     pd.Series(preds).to_csv(filename, index=False, header=False)

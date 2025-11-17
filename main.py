@@ -94,6 +94,6 @@ with Timer("Predicting on test set..."):
 # Save submission files
 # -----------------------------------
 logger.info("Saving submission files...")
-submission_timestamp_path = save_submission(preds, timestamp) # added timestamp just for the submission_timestamp.csv file name
+submission_timestamp_path = save_submission(preds, metadata_test, timestamp) # added timestamp just for the submission_timestamp.csv file name
 logger.info(f"Created: {submission_timestamp_path}")
 logger.info("Pipeline completed successfully.")
