@@ -86,8 +86,6 @@ with Timer("Predicting on test set..."):
     preds = predict_model(
         model=model, 
         X_test=X_test, 
-        metadata_test=metadata_test, 
-        timestamp=timestamp # added timestamp just for the submission_timestamp.csv file name
     ) 
 
 
@@ -95,6 +93,6 @@ with Timer("Predicting on test set..."):
 # Save submission files
 # -----------------------------------
 logger.info("Saving submission files...")
-submission_timestamp_path = save_submission(preds, timestamp)
+submission_timestamp_path = save_submission(preds, timestamp) # added timestamp just for the submission_timestamp.csv file name
 logger.info(f"Created: {submission_timestamp_path}")
 logger.info("Pipeline completed successfully.")
