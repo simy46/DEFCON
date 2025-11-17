@@ -15,10 +15,11 @@ preprocessing:
   one_hot_encode:
     enabled: true
     columns:
-      - Isolation source
-      - Testing standard
       - Isolation type
       - Location
+      - Isolation source
+      - Laboratory typing platform
+      - Testing standard
 
   pca:
     enabled: false
