@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-from config.consts import OUTPUT_DIR
+from config.consts import IDS_KEY, OUTPUT_DIR
 
 def save_submission(preds, metadata_test, timestamp: str) -> str:
     """
@@ -19,7 +19,7 @@ def save_submission(preds, metadata_test, timestamp: str) -> str:
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     df = pd.DataFrame({
-        "id": metadata_test["ID"].values,
+        "id": metadata_test[IDS_KEY].values,
         "label": preds.astype(int)
     })
 
