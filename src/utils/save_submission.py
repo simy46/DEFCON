@@ -25,6 +25,6 @@ def save_submission(preds, metadata_test, timestamp: str) -> str:
 
 
     filename = f"{OUTPUT_DIR}/submission_{timestamp}.csv"
-    pd.Series(preds).to_csv(filename, index=False, header=False)
+    df.to_csv(filename, index=False, header=False)
 
     return filename
