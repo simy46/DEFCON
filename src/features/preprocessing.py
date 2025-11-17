@@ -8,7 +8,8 @@ from config.consts import LOG_FILE_PREFIX
 from .normalization import normalize_data
 from .feature_selection import (
     filter_low_variance_features,
-    select_first_features
+    select_first_features,
+    select_k_best_features
 )
 from .pca import apply_pca
 from .encode_metadata import encode_metadata
@@ -19,6 +20,7 @@ logger = logging.getLogger(LOG_FILE_PREFIX)
 def apply_preprocessing(
     X_train: NDArray,
     X_test: NDArray,
+    y_train: NDArray,
     metadata_train: DataFrame,
     metadata_test: DataFrame,
     cfg: dict
@@ -29,9 +31,10 @@ def apply_preprocessing(
     pp = cfg["preprocessing"]
 
     # attributes
+    ohe = pp["one_hot_encode"]
+    select_best_k = pp["select_k_best"]
     select_first_k = pp["select_first_k"]
     pca = pp["pca"]
-    ohe = pp["one_hot_encode"]
     normalize = pp["normalize"]
     variance_threshold = pp["variance_threshold"]
 
@@ -57,6 +60,15 @@ def apply_preprocessing(
         X_test = np.hstack([X_test, test_meta_enc])
 
         logger.info(f"After metadata concat: X_train={X_train.shape}, X_test={X_test.shape}")
+
+    # ---------------------------------------------
+    # Select K Best (supervised)
+    # ---------------------------------------------
+    if select_best_k["enabled"]:
+        k = pp["select_k_best"]["k"]
+        logger.info(f"Selecting top {k} most informative features ...")
+        X_train, X_test = select_k_best_features(X_train, y_train, X_test, k)
+        logger.info(f"After SelectKBest: X_train={X_train.shape}, X_test={X_test.shape}")
 
     # ---------------------------------------------
     # First-k feature selection (optional)

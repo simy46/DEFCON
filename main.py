@@ -68,6 +68,7 @@ with Timer("Preprocessing data..."):
     X_train, X_test = apply_preprocessing(
         X_train=X_train, 
         X_test=X_test, 
+        y_train=y_train,
         metadata_train=metadata_train, 
         metadata_test=metadata_test, 
         cfg=cfg

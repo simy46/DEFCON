@@ -18,7 +18,6 @@ preprocessing:
       - Isolation type
       - Location
       - Isolation source
-      - Laboratory typing platform
       - Testing standard
 
   pca:
@@ -29,7 +28,10 @@ preprocessing:
   variance_threshold:
     enabled: true
     threshold: 0.001
+  select_k_best:
+    enabled: true
+    k: 100000
 
   select_first_k:
-    enabled: true
+    enabled: false
     k: 10000

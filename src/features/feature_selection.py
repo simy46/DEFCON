@@ -1,23 +1,31 @@
+from typing import Tuple
 from numpy.typing import NDArray
-from sklearn.feature_selection import VarianceThreshold
+from sklearn.feature_selection import VarianceThreshold, SelectKBest, mutual_info_classif
+
 
 def filter_low_variance_features(
     X_train: NDArray,
     X_test: NDArray,
     threshold: float
-) -> tuple[NDArray, NDArray]:
+) -> Tuple[NDArray, NDArray]:
     """
-    Remove low-variance features.
+    Remove features with variance below a threshold.
 
-    Args:
-        threshold (float): Minimum variance required.
+    Parameters
+    X_train : NDArray
+        Training feature matrix.
+    X_test : NDArray
+        Test feature matrix.
+    threshold : float
+        Minimum variance required to keep a feature.
 
-    Returns:
-        tuple[NDArray, NDArray]: Filtered train and test matrices.
+    Returns
+    Tuple[NDArray, NDArray]
+        Filtered (X_train, X_test) matrices.
     """
     selector = VarianceThreshold(threshold=threshold)
-    X_train_sel = selector.fit_transform(X_train)
-    X_test_sel = selector.transform(X_test)
+    X_train_sel: NDArray = selector.fit_transform(X_train)
+    X_test_sel: NDArray = selector.transform(X_test)
     return X_train_sel, X_test_sel
 
 
@@ -25,14 +33,53 @@ def select_first_features(
     X_train: NDArray,
     X_test: NDArray,
     n_features: int
-) -> tuple[NDArray, NDArray]:
+) -> Tuple[NDArray, NDArray]:
     """
     Select the first n_features columns.
 
-    Args:
-        n_features (int): Number of columns to keep.
+    Parameters
+    X_train : NDArray
+        Training feature matrix.
+    X_test : NDArray
+        Test feature matrix.
+    n_features : int
+        Number of columns to keep.
 
-    Returns:
-        tuple[NDArray, NDArray]: Reduced train and test matrices.
+    Returns
+    Tuple[NDArray, NDArray]
+        Reduced (X_train, X_test) matrices.
     """
-    return X_train[:, :n_features], X_test[:, :n_features]
+    X_train_sel: NDArray = X_train[:, :n_features]
+    X_test_sel: NDArray = X_test[:, :n_features]
+    return X_train_sel, X_test_sel
+
+
+def select_k_best_features(
+    X_train: NDArray,
+    y_train: NDArray,
+    X_test: NDArray,
+    k: int
+) -> Tuple[NDArray, NDArray]:
+    """
+    Select the top-k most informative features (supervised).
+
+    Parameters
+    X_train : NDArray
+        Training feature matrix.
+    y_train : NDArray
+        Training labels.
+    X_test : NDArray
+        Test feature matrix.
+    k : int
+        Number of best features to keep.
+
+    Returns
+    Tuple[NDArray, NDArray]
+        (X_train_selected, X_test_selected)
+    """
+    selector = SelectKBest(mutual_info_classif, k=k)
+
+    X_train_sel: NDArray = selector.fit_transform(X_train, y_train)
+    X_test_sel: NDArray = selector.transform(X_test)
+
+    return X_train_sel, X_test_sel
