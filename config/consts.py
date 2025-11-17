@@ -17,7 +17,7 @@ METADATA_TEST_PATH = 'data/metadata_test.csv'
 X_TRAIN_KEY = 'X_train'
 Y_TRAIN_KEY = 'y_train'
 X_TEST_KEY  = "X_test"
-IDS_KEY     = "ids"
+IDS_KEY     = "ID"
 
 
 # LOGS FILE PREFIX
