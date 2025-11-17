@@ -3,16 +3,16 @@ model:
   booster: gbtree
 
   eta: 0.05
-  max_depth: 4
-  min_child_weight: 10
+  max_depth: 6
+  min_child_weight: 5
 
-  subsample: 0.7
-  colsample_bytree: 0.4
+  subsample: 0.75
+  colsample_bytree: 0.5
 
   lambda: 5.0
-  alpha: 2.0
+  alpha: 1.0
 
-  n_estimators: 300
+  n_estimators: 500
   tree_method: hist
   max_bin: 250
   n_jobs: -1
@@ -33,7 +33,7 @@ preprocessing:
       - Testing standard
 
   pca:
-    enabled: true
+    enabled: false
     n_components: 300
     svd_solver: randomized
 
@@ -43,7 +43,7 @@ preprocessing:
 
   select_k_best:
     enabled: true
-    k: 15000
+    k: 20000
 
   select_first_k:
     enabled: false
