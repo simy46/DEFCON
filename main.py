@@ -50,7 +50,7 @@ with open(args.config, "r") as f:
     cfg = yaml.safe_load(f)
 
 logger, timestamp = get_logger()
-logger.info(f"Loaded config: {args.config}")
+logger.info(f"Loaded config ({args.config})" + yaml.dump(cfg, sort_keys=False))
 
 # -----------------------------------
 # Load training and test data
