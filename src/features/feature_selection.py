@@ -1,6 +1,8 @@
 from typing import Tuple
+import numpy as np
 from numpy.typing import NDArray
-from sklearn.feature_selection import VarianceThreshold, SelectKBest, mutual_info_classif
+from sklearn.feature_selection import VarianceThreshold, SelectKBest, f_classif
+from xgboost import XGBClassifier # type: ignore
 
 
 def filter_low_variance_features(
@@ -77,9 +79,65 @@ def select_k_best_features(
     Tuple[NDArray, NDArray]
         (X_train_selected, X_test_selected)
     """
-    selector = SelectKBest(mutual_info_classif, k=k)
+    assert (X_train >= 0).all()
+    selector = SelectKBest(f_classif, k=k)
 
     X_train_sel: NDArray = selector.fit_transform(X_train, y_train)
     X_test_sel: NDArray = selector.transform(X_test)
+
+    return X_train_sel, X_test_sel
+
+
+def select_topk_xgboost(
+    X_train: NDArray,
+    y_train: NDArray,
+    X_test: NDArray,
+    k: int,
+    random_state: int = 42
+) -> Tuple[NDArray, NDArray]:
+    """
+    Select top-k most important features using XGBoost feature importance.
+
+    Parameters
+    X_train : NDArray
+        Training feature matrix.
+    y_train : NDArray
+        Training labels (0/1).
+    X_test : NDArray
+        Test feature matrix.
+    k : int
+        Number of best features to select.
+    random_state : int
+        Seed for XGBoost reproducibility.
+
+    Returns
+    Tuple[NDArray, NDArray]
+        (X_train_selected, X_test_selected)
+    """
+
+    model = XGBClassifier(
+        n_estimators=200,
+        max_depth=6,
+        learning_rate=0.1,
+        subsample=0.8,
+        colsample_bytree=0.8,
+        objective="binary:logistic",
+        eval_metric="logloss",
+        tree_method="hist",
+        n_jobs=-1,
+        random_state=random_state
+    )
+
+    model.fit(X_train, y_train)
+    importances = model.feature_importances_
+
+    if importances is None or len(importances) == 0:
+        raise RuntimeError("XGBoost returned no feature importances. Cannot rank features.")
+
+    indices = np.argsort(importances)[::-1]
+
+    topk_idx = indices[:k]
+    X_train_sel = X_train[:, topk_idx]
+    X_test_sel = X_test[:, topk_idx]
 
     return X_train_sel, X_test_sel
