@@ -1,8 +1,9 @@
+from sklearn.calibration import LinearSVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier # type: ignore
-from config.consts import LOGISTIC_REGRESSION, SVM, RANDOM_FOREST, XGBOOST
+from config.consts import LOGISTIC_REGRESSION, LINEAR_SVM, RANDOM_FOREST, XGBOOST
 
 def build_model(model_cfg):
     name = model_cfg["name"]
@@ -17,11 +18,12 @@ def build_model(model_cfg):
             random_state=model_cfg["random_state"]
         )
 
-    if name == SVM:
-        return SVC(
+    if name == LINEAR_SVM:
+        return LinearSVC(
             C=model_cfg["C"],
-            kernel=model_cfg["kernel"],
-            probability=True
+            loss=model_cfg["loss"],
+            max_iter=model_cfg["max_iter"],
+            random_state=model_cfg["random_state"],
         )
 
     if name == RANDOM_FOREST:
@@ -31,7 +33,8 @@ def build_model(model_cfg):
             min_samples_split=model_cfg["min_samples_split"],
             min_samples_leaf=model_cfg["min_samples_leaf"],
             class_weight=model_cfg["class_weight"],
-            n_jobs=model_cfg["n_jobs"]
+            n_jobs=model_cfg["n_jobs"],
+            max_features=model_cfg["max_features"]
         )
 
     if name == XGBOOST:
