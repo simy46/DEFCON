@@ -6,7 +6,13 @@ __pycache__/
 # C extensions
 *.so
 
-train.npz
+# Results
+outputs/*
+
+# Heavy data
+data/test.npz
+data/train.npz
+*.npz
 
 # Distribution / packaging
 .Python
