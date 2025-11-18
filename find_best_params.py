@@ -85,13 +85,13 @@ rf = RandomForestClassifier(
 # HYPERPARAMETER SEARCH SPACE
 # -----------------------------------
 param_grid = {
-    "n_estimators": [100, 300, 500, 800, 1200],
-    "max_depth": [None, 6, 10, 20, 40],
-    "min_samples_split": [2, 5, 10, 20, 40],
-    "min_samples_leaf": [1, 2, 4, 10, 20],
-    "max_features": ["sqrt", "log2", 0.3, 0.5, 1.0],
-    "criterion": ["gini", "entropy"],
-    "bootstrap": [True, False]
+    "n_estimators": [500, 800, 1200, 1500],
+    "max_depth": [10, 15, 20, 25, 30],
+    "min_samples_split": [2, 5, 10],
+    "min_samples_leaf": [1, 2, 4],
+    "max_features": ["sqrt", 0.3, 0.5],
+    "criterion": ["entropy"],
+    "bootstrap": [False]
 }
 
 
@@ -119,7 +119,8 @@ else:
         verbose=3,
         n_jobs=-1,
         random_state=42,
-        scoring="f1_macro"
+        scoring="f1_macro",
+        refit=True
     )
 
 

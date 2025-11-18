@@ -39,7 +39,7 @@ preprocessing:
     threshold: 0.002
   
   select_variance_k:
-    enabled: true
+    enabled: false
     k: 10000
 
   select_xgboost_k:
@@ -47,7 +47,7 @@ preprocessing:
     k: 8000
 
   select_k_best:
-    enabled: false
+    enabled: true
     k: 40000
 
   select_first_k:
