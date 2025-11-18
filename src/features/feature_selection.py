@@ -140,3 +140,38 @@ def select_xgboost_k_features(
     X_test_sel = X_test[:, topk_idx]
 
     return X_train_sel, X_test_sel
+
+from typing import Tuple
+import numpy as np
+from numpy.typing import NDArray
+
+
+def select_top_variance_features(
+    X_train: NDArray,
+    X_test: NDArray,
+    k: int
+) -> Tuple[NDArray, NDArray]:
+    """
+    Select the top-k features with the highest variance in X_train.
+    Useful for high-dimensional genomic data where most features are constant.
+
+    Parameters
+    X_train : NDArray
+        Training matrix (n_samples, n_features).
+    X_test : NDArray
+        Test matrix with same number/order of features.
+    k : int
+        Number of highest-variance features to keep.
+
+    Returns
+    Tuple[NDArray, NDArray]
+        (X_train_selected, X_test_selected)
+    """
+
+    if k > X_train.shape[1]:
+        raise ValueError(f"k={k} > number of features={X_train.shape[1]}")
+
+    variances = X_train.var(axis=0)
+    topk_idx = np.argsort(variances)[::-1][:k]
+
+    return X_train[:, topk_idx], X_test[:, topk_idx]

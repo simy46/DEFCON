@@ -10,6 +10,7 @@ from .feature_selection import (
     filter_low_variance_features,
     select_first_features,
     select_k_best_features,
+    select_top_variance_features,
     select_xgboost_k_features
 )
 from .pca import apply_pca
@@ -33,6 +34,7 @@ def apply_preprocessing(
 
     # attributes
     ohe = pp["one_hot_encode"]
+    select_var_k = pp["select_variance_k"]
     select_xgboost_k = pp["select_xgboost_k"]
     select_best_k = pp["select_k_best"]
     select_first_k = pp["select_first_k"]
@@ -52,6 +54,15 @@ def apply_preprocessing(
         X_train, X_test = filter_low_variance_features(X_train, X_test, threshold)
         logger.info(f"After VarianceThreshold: X_train={X_train.shape}, X_test={X_test.shape}")
 
+        
+    # ---------------------------------------------
+    # Select K Best based on variance (supervised)
+    # ---------------------------------------------
+    if select_var_k["enabled"]:
+        k = select_var_k["k"]
+        logger.info(f"Selecting top {k} most informative features via Variance ...")
+        X_train, X_test = select_top_variance_features(X_train, X_test, k)
+        logger.info(f"After SelectKBest: X_train={X_train.shape}, X_test={X_test.shape}")
 
     # ---------------------------------------------
     # Select K Best (supervised)
