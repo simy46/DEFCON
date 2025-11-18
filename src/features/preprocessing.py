@@ -44,6 +44,26 @@ def apply_preprocessing(
 
 
     # ---------------------------------------------
+    # Variance threshold
+    # ---------------------------------------------
+    if variance_threshold["enabled"]:
+        threshold = variance_threshold["threshold"]
+        logger.info(f"Applying VarianceThreshold(threshold={threshold}) ...")
+        X_train, X_test = filter_low_variance_features(X_train, X_test, threshold)
+        logger.info(f"After VarianceThreshold: X_train={X_train.shape}, X_test={X_test.shape}")
+
+
+    # ---------------------------------------------
+    # Select K Best (supervised)
+    # ---------------------------------------------
+    if select_best_k["enabled"]:
+        k = select_best_k["k"]
+        logger.info(f"Selecting top {k} most informative features ...")
+        X_train, X_test = select_k_best_features(X_train, y_train, X_test, k)
+        logger.info(f"After SelectKBest: X_train={X_train.shape}, X_test={X_test.shape}")
+
+
+    # ---------------------------------------------
     # Select K Best Based On xgBoost (supervised)
     # ---------------------------------------------
     if select_xgboost_k["enabled"]:
@@ -58,16 +78,6 @@ def apply_preprocessing(
 
 
     # ---------------------------------------------
-    # Select K Best (supervised)
-    # ---------------------------------------------
-    if select_best_k["enabled"]:
-        k = select_best_k["k"]
-        logger.info(f"Selecting top {k} most informative features ...")
-        X_train, X_test = select_k_best_features(X_train, y_train, X_test, k)
-        logger.info(f"After SelectKBest: X_train={X_train.shape}, X_test={X_test.shape}")
-
-
-    # ---------------------------------------------
     # First-k feature selection (optional)
     # ---------------------------------------------
     if select_first_k["enabled"]:
@@ -78,37 +88,6 @@ def apply_preprocessing(
 
 
     # ---------------------------------------------
-    # Normalization
-    # ---------------------------------------------
-    if normalize:
-        with_mean = pp.get("normalize_with_mean", False)
-        logger.info(f"Applying StandardScaler(with_mean={with_mean}) ...")
-        X_train, X_test = normalize_data(X_train, X_test, with_mean)
-        logger.info(f"After normalization: X_train={X_train.shape}, X_test={X_test.shape}")
-
-    
-    # ---------------------------------------------
-    # Variance threshold
-    # ---------------------------------------------
-    if variance_threshold["enabled"]:
-        threshold = variance_threshold["threshold"]
-        logger.info(f"Applying VarianceThreshold(threshold={threshold}) ...")
-        X_train, X_test = filter_low_variance_features(X_train, X_test, threshold)
-        logger.info(f"After VarianceThreshold: X_train={X_train.shape}, X_test={X_test.shape}")
-
-
-    # ---------------------------------------------
-    # PCA
-    # ---------------------------------------------
-    if pca["enabled"]:
-        n_components = pca["n_components"]
-        svd_solver = pca.get("svd_solver", "randomized")
-        logger.info(f"Applying PCA(n_components={n_components}) ...")
-        X_train, X_test = apply_pca(X_train, X_test, n_components, svd_solver)
-        logger.info(f"After PCA: X_train={X_train.shape}, X_test={X_test.shape}")
-
-
-        # ---------------------------------------------
     # One-Hot Encoding (metadata)
     # ---------------------------------------------
     if ohe["enabled"]:
@@ -127,6 +106,27 @@ def apply_preprocessing(
         X_test = np.hstack([X_test, test_meta_enc])
 
         logger.info(f"After metadata concat: X_train={X_train.shape}, X_test={X_test.shape}")
+
+
+    # ---------------------------------------------
+    # Normalization
+    # ---------------------------------------------
+    if normalize:
+        with_mean = pp.get("normalize_with_mean", False)
+        logger.info(f"Applying StandardScaler(with_mean={with_mean}) ...")
+        X_train, X_test = normalize_data(X_train, X_test, with_mean)
+        logger.info(f"After normalization: X_train={X_train.shape}, X_test={X_test.shape}")
+
+
+    # ---------------------------------------------
+    # PCA
+    # ---------------------------------------------
+    if pca["enabled"]:
+        n_components = pca["n_components"]
+        svd_solver = pca.get("svd_solver", "randomized")
+        logger.info(f"Applying PCA(n_components={n_components}) ...")
+        X_train, X_test = apply_pca(X_train, X_test, n_components, svd_solver)
+        logger.info(f"After PCA: X_train={X_train.shape}, X_test={X_test.shape}")
 
     logger.info("Preprocessing complete.")
     return X_train, X_test

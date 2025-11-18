@@ -1,7 +1,7 @@
 from typing import Tuple
 import numpy as np
 from numpy.typing import NDArray
-from sklearn.feature_selection import VarianceThreshold, SelectKBest, f_classif
+from sklearn.feature_selection import VarianceThreshold, SelectKBest, chi2
 from xgboost import XGBClassifier # type: ignore
 
 
@@ -80,7 +80,7 @@ def select_k_best_features(
         (X_train_selected, X_test_selected)
     """
     assert (X_train >= 0).all()
-    selector = SelectKBest(f_classif, k=k)
+    selector = SelectKBest(chi2, k=k)
 
     X_train_sel: NDArray = selector.fit_transform(X_train, y_train)
     X_test_sel: NDArray = selector.transform(X_test)
