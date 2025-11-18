@@ -119,7 +119,7 @@ else:
         verbose=3,
         n_jobs=-1,
         random_state=42,
-        scoring="f1"
+        scoring="f1_macro"
     )
 
 
