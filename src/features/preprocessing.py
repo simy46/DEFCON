@@ -67,12 +67,13 @@ def apply_preprocessing(
     # Select K Best Based On xgBoost (supervised)
     # ---------------------------------------------
     if select_xgboost_k["enabled"]:
+        k = select_xgboost_k["k"]
         logger.info(f"Selecting top {k} most informative features via XGBoost...")
         X_train, X_test = select_xgboost_k_features(
             X_train=X_train,
             y_train=y_train,
             X_test=X_test,
-            k=select_xgboost_k["k"],
+            k=k,
         )
         logger.info(f"After XGBoost K select: X_train={X_train.shape}, X_test={X_test.shape}")
 
