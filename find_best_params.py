@@ -115,7 +115,7 @@ else:
     search = RandomizedSearchCV(
         rf,
         param_distributions=param_grid,
-        n_iter=40,                 # Number of random combinations
+        n_iter=20,                 # Number of random combinations
         cv=model_cfg["cv_folds"],
         verbose=3,
         n_jobs=-1,
