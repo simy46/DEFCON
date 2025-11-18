@@ -1,6 +1,6 @@
 import logging
 import numpy as np
-from sklearn.metrics import f1_score, accuracy_score
+from sklearn.metrics import f1_score
 from sklearn.model_selection import StratifiedKFold
 from .model_selection import build_model
 from config.consts import LOG_FILE_PREFIX
@@ -11,7 +11,8 @@ logger = logging.getLogger(LOG_FILE_PREFIX)
 def train_model(X_train, y_train, cfg):
     """
     Train model using StratifiedKFold cross-validation.
-    Refit the model on full training data at the end.
+    Logs both binary-F1 and macro-F1.
+    Refit the final model on full dataset.
     """
 
     model_cfg = cfg["model"]
@@ -22,8 +23,10 @@ def train_model(X_train, y_train, cfg):
 
     cv = StratifiedKFold(n_splits=k_folds, shuffle=True, random_state=random_state)
 
-    fold_f1 = []
-    fold_f1_train = []
+    f1_binary_scores = []
+    f1_macro_scores = []
+    f1_binary_train_scores = []
+    f1_macro_train_scores = []
 
     logger.info(f"Starting {k_folds}-fold cross-validation...")
 
@@ -33,30 +36,35 @@ def train_model(X_train, y_train, cfg):
         X_tr, X_val = X_train[tr_idx], X_train[val_idx]
         y_tr, y_val = y_train[tr_idx], y_train[val_idx]
 
-        # Train
         model.fit(X_tr, y_tr)
 
-        # Predictions
-        y_pred = model.predict(X_val)
-        y_pred_train = model.predict(X_tr)
+        y_pred_val = model.predict(X_val)
+        y_pred_tr = model.predict(X_tr)
 
-        # Metrics
-        f1 = f1_score(y_val, y_pred)
-        f1_tr = f1_score(y_tr, y_pred_train)
+        f1_bin = f1_score(y_val, y_pred_val, average="binary")
+        f1_mac = f1_score(y_val, y_pred_val, average="macro")
 
-        fold_f1.append(f1)
-        fold_f1_train.append(f1_tr)
+        f1_bin_tr = f1_score(y_tr, y_pred_tr, average="binary")
+        f1_mac_tr = f1_score(y_tr, y_pred_tr, average="macro")
 
-        logger.info(f"  Train F1: {f1_tr:.4f}")
-        logger.info(f"  Valid F1: {f1:.4f}")
-        logger.info(f"  Gap (train - val): {f1_tr - f1:.4f}")
+        f1_binary_scores.append(f1_bin)
+        f1_macro_scores.append(f1_mac)
+        f1_binary_train_scores.append(f1_bin_tr)
+        f1_macro_train_scores.append(f1_mac_tr)
 
-    # Summary
+        logger.info(f"  Train F1 (binary): {f1_bin_tr:.4f}")
+        logger.info(f"  Train F1 (macro) : {f1_mac_tr:.4f}")
+        logger.info(f"  Valid F1 (binary): {f1_bin:.4f}")
+        logger.info(f"  Valid F1 (macro) : {f1_mac:.4f}")
+        logger.info(f"  Gap (binary):     {f1_bin_tr - f1_bin:.4f}")
+        logger.info(f"  Gap (macro):      {f1_mac_tr - f1_mac:.4f}")
+
     logger.info("Cross-validation complete.")
-    logger.info(f"Mean F1 = {np.mean(fold_f1):.4f}")
-    logger.info(f"Std F1  = {np.std(fold_f1):.4f}")
+    logger.info(f"Mean F1 (binary) = {np.mean(f1_binary_scores):.4f}")
+    logger.info(f"Std  F1 (binary) = {np.std(f1_binary_scores):.4f}")
+    logger.info(f"Mean F1 (macro)  = {np.mean(f1_macro_scores):.4f}")
+    logger.info(f"Std  F1 (macro)  = {np.std(f1_macro_scores):.4f}")
 
-    # Refit final model
     logger.info("Refitting final model on full dataset...")
     model.fit(X_train, y_train)
 
