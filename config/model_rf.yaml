@@ -3,12 +3,12 @@ model:
   n_estimators: 800
   max_depth: 30
   min_samples_split: 5
-  min_samples_leaf: 5
+  min_samples_leaf: 2
   n_jobs: -1
   random_state: 42
   class_weight: balanced
   cv_folds: 5
-  max_features: 0.2
+  max_features: sqrt
 
 preprocessing:
   normalize: false
@@ -27,7 +27,7 @@ preprocessing:
 
   variance_threshold:
     enabled: true
-    threshold: 0.0005
+    threshold: 0.001
 
   select_xgboost_k:
     enabled: true
@@ -35,7 +35,7 @@ preprocessing:
 
   select_k_best:
     enabled: false
-    k: 100000
+    k: 80000
 
   select_first_k:
     enabled: false
