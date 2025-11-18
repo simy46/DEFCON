@@ -29,6 +29,10 @@ preprocessing:
     enabled: true
     threshold: 0.0005
 
+  select_xgboost_k:
+    enabled: true
+    k: 20000
+
   select_k_best:
     enabled: true
     k: 100000
