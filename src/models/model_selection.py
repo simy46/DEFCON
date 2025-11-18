@@ -35,7 +35,7 @@ def build_model(model_cfg):
             max_features=model_cfg["max_features"],
             max_depth=model_cfg["max_depth"],
             criterion=model_cfg["criterion"],
-            bootstrap=model_cfg["boostrap"],
+            bootstrap=model_cfg["bootstrap"],
             class_weight=model_cfg["class_weight"],
             random_state=model_cfg["random_state"],
         )
