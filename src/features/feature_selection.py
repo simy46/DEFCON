@@ -115,11 +115,11 @@ def select_xgboost_k_features(
     """
 
     model = XGBClassifier(
-        n_estimators=200,
-        max_depth=6,
-        learning_rate=0.1,
-        subsample=0.8,
-        colsample_bytree=0.8,
+        n_estimators=300,
+        max_depth=5,
+        learning_rate=0.03,
+        subsample=0.7,
+        colsample_bytree=0.5,
         objective="binary:logistic",
         eval_metric="logloss",
         tree_method="hist",
