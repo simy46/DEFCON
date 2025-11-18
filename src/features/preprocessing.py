@@ -48,7 +48,7 @@ def apply_preprocessing(
     # ---------------------------------------------
     if select_xgboost_k["enabled"]:
         logger.info(f"Selecting top {k} most informative features via XGBoost...")
-        select_xgboost_k_features(
+        X_train, X_test = select_xgboost_k_features(
             X_train=X_train,
             y_train=y_train,
             X_test=X_test,
