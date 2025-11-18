@@ -76,9 +76,12 @@ model_cfg = cfg["model"]
 assert model_cfg["name"] == "random_forest"
 
 rf = RandomForestClassifier(
-    n_jobs=model_cfg.get("n_jobs", -1),
-    random_state=model_cfg.get("random_state", 42)
-)
+    n_jobs=model_cfg["n_jobs"],
+        criterion=model_cfg["criterion"],
+        bootstrap=model_cfg["bootstrap"],
+        class_weight=model_cfg["class_weight"],
+        random_state=model_cfg["random_state"],
+    )
 
 
 # -----------------------------------
@@ -90,8 +93,6 @@ param_grid = {
     "min_samples_split": [2, 5, 10],
     "min_samples_leaf": [1, 2, 4],
     "max_features": ["sqrt", 0.3, 0.5],
-    "criterion": ["entropy"],
-    "bootstrap": [False]
 }
 
 
