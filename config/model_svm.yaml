@@ -27,6 +27,10 @@ preprocessing:
     enabled: true
     threshold: 0.0005
 
+  select_variance_k:
+      enabled: true
+      k: 10000
+  
   select_xgboost_k:
     enabled: true
     k: 20000

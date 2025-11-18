@@ -6,7 +6,7 @@ model:
   min_samples_leaf: 15
   n_jobs: -1
   random_state: 42
-  class_weight: balanced
+  class_weight: balanced_subsample
   cv_folds: 5
   max_features: sqrt
 
@@ -28,13 +28,17 @@ preprocessing:
   variance_threshold:
     enabled: true
     threshold: 0.002
+  
+  select_variance_k:
+    enabled: true
+    k: 10000
 
   select_xgboost_k:
-    enabled: true
+    enabled: false
     k: 8000
 
   select_k_best:
-    enabled: true
+    enabled: false
     k: 40000
 
   select_first_k:
