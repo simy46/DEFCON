@@ -32,7 +32,7 @@ preprocessing:
     k: 20000
 
   select_k_best:
-    enabled: true
+    enabled: false
     k: 100000
 
   select_first_k:
