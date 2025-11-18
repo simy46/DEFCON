@@ -14,7 +14,6 @@ from src.utils.timer import Timer
 from src.data.data_loader import load_test, load_train
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
 
 # -----------------------------------
 # Parse command line arguments
@@ -119,7 +118,8 @@ else:
         cv=model_cfg["cv_folds"],
         verbose=3,
         n_jobs=-1,
-        random_state=42
+        random_state=42,
+        scoring="f1"
     )
 
 
