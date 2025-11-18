@@ -124,7 +124,7 @@ def select_xgboost_k_features(
         eval_metric="logloss",
         tree_method="hist",
         n_jobs=-1,
-        random_state=random_state
+        random_state=42
     )
 
     model.fit(X_train, y_train)
