@@ -1,9 +1,9 @@
 model:
   name: random_forest
-  n_estimators: 800
-  max_depth: 30
-  min_samples_split: 5
-  min_samples_leaf: 2
+  n_estimators: 500
+  max_depth: 12
+  min_samples_split: 20
+  min_samples_leaf: 15
   n_jobs: -1
   random_state: 42
   class_weight: balanced
@@ -27,15 +27,15 @@ preprocessing:
 
   variance_threshold:
     enabled: true
-    threshold: 0.001
+    threshold: 0.002
 
   select_xgboost_k:
     enabled: true
-    k: 20000
+    k: 8000
 
   select_k_best:
     enabled: true
-    k: 80000
+    k: 40000
 
   select_first_k:
     enabled: false
