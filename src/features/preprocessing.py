@@ -9,7 +9,9 @@ from .normalization import normalize_data
 from .feature_selection import (
     filter_low_variance_features,
     select_first_features,
-    select_k_best_features
+    select_k_best_features,
+    select_top_variance_features,
+    select_xgboost_k_features
 )
 from .pca import apply_pca
 from .encode_metadata import encode_metadata
@@ -32,6 +34,8 @@ def apply_preprocessing(
 
     # attributes
     ohe = pp["one_hot_encode"]
+    select_var_k = pp["select_variance_k"]
+    select_xgboost_k = pp["select_xgboost_k"]
     select_best_k = pp["select_k_best"]
     select_first_k = pp["select_first_k"]
     pca = pp["pca"]
@@ -39,6 +43,60 @@ def apply_preprocessing(
     variance_threshold = pp["variance_threshold"]
 
     logger.info(f"Initial shapes: X_train={X_train.shape}, X_test={X_test.shape}")
+
+
+    # ---------------------------------------------
+    # Variance threshold
+    # ---------------------------------------------
+    if variance_threshold["enabled"]:
+        threshold = variance_threshold["threshold"]
+        logger.info(f"Applying VarianceThreshold(threshold={threshold}) ...")
+        X_train, X_test = filter_low_variance_features(X_train, X_test, threshold)
+        logger.info(f"After VarianceThreshold: X_train={X_train.shape}, X_test={X_test.shape}")
+
+        
+    # ---------------------------------------------
+    # Select K Best based on variance (supervised)
+    # ---------------------------------------------
+    if select_var_k["enabled"]:
+        k = select_var_k["k"]
+        logger.info(f"Selecting top {k} most informative features via Variance ...")
+        X_train, X_test = select_top_variance_features(X_train, X_test, k)
+        logger.info(f"After SelectKBest: X_train={X_train.shape}, X_test={X_test.shape}")
+
+    # ---------------------------------------------
+    # Select K Best (supervised)
+    # ---------------------------------------------
+    if select_best_k["enabled"]:
+        k = select_best_k["k"]
+        logger.info(f"Selecting top {k} most informative features ...")
+        X_train, X_test = select_k_best_features(X_train, y_train, X_test, k)
+        logger.info(f"After SelectKBest: X_train={X_train.shape}, X_test={X_test.shape}")
+
+
+    # ---------------------------------------------
+    # Select K Best Based On xgBoost (supervised)
+    # ---------------------------------------------
+    if select_xgboost_k["enabled"]:
+        k = select_xgboost_k["k"]
+        logger.info(f"Selecting top {k} most informative features via XGBoost...")
+        X_train, X_test = select_xgboost_k_features(
+            X_train=X_train,
+            y_train=y_train,
+            X_test=X_test,
+            k=k,
+        )
+        logger.info(f"After XGBoost K select: X_train={X_train.shape}, X_test={X_test.shape}")
+
+
+    # ---------------------------------------------
+    # First-k feature selection (optional)
+    # ---------------------------------------------
+    if select_first_k["enabled"]:
+        k = select_first_k["k"]
+        logger.info(f"Selecting first {k} features ...")
+        X_train, X_test = select_first_features(X_train, X_test, k)
+        logger.info(f"After first-k selection: X_train={X_train.shape}, X_test={X_test.shape}")
 
 
     # ---------------------------------------------
@@ -61,24 +119,6 @@ def apply_preprocessing(
 
         logger.info(f"After metadata concat: X_train={X_train.shape}, X_test={X_test.shape}")
 
-    # ---------------------------------------------
-    # Select K Best (supervised)
-    # ---------------------------------------------
-    if select_best_k["enabled"]:
-        k = pp["select_k_best"]["k"]
-        logger.info(f"Selecting top {k} most informative features ...")
-        X_train, X_test = select_k_best_features(X_train, y_train, X_test, k)
-        logger.info(f"After SelectKBest: X_train={X_train.shape}, X_test={X_test.shape}")
-
-    # ---------------------------------------------
-    # First-k feature selection (optional)
-    # ---------------------------------------------
-    if select_first_k["enabled"]:
-        k = select_first_k["k"]
-        logger.info(f"Selecting first {k} features ...")
-        X_train, X_test = select_first_features(X_train, X_test, k)
-        logger.info(f"After first-k selection: X_train={X_train.shape}, X_test={X_test.shape}")
-
 
     # ---------------------------------------------
     # Normalization
@@ -89,15 +129,6 @@ def apply_preprocessing(
         X_train, X_test = normalize_data(X_train, X_test, with_mean)
         logger.info(f"After normalization: X_train={X_train.shape}, X_test={X_test.shape}")
 
-    
-    # ---------------------------------------------
-    # Variance threshold
-    # ---------------------------------------------
-    if variance_threshold["enabled"]:
-        threshold = variance_threshold["threshold"]
-        logger.info(f"Applying VarianceThreshold(threshold={threshold}) ...")
-        X_train, X_test = filter_low_variance_features(X_train, X_test, threshold)
-        logger.info(f"After VarianceThreshold: X_train={X_train.shape}, X_test={X_test.shape}")
 
     # ---------------------------------------------
     # PCA

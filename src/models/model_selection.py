@@ -15,7 +15,7 @@ def build_model(model_cfg):
             C=model_cfg["C"],
             max_iter=model_cfg["max_iter"],
             n_jobs=model_cfg["n_jobs"],
-            random_state=model_cfg["random_state"]
+            random_state=model_cfg["random_state"],
         )
 
     if name == LINEAR_SVM:
@@ -28,13 +28,16 @@ def build_model(model_cfg):
 
     if name == RANDOM_FOREST:
         return RandomForestClassifier(
+            n_jobs=model_cfg["n_jobs"],
             n_estimators=model_cfg["n_estimators"],
-            max_depth=model_cfg["max_depth"],
             min_samples_split=model_cfg["min_samples_split"],
             min_samples_leaf=model_cfg["min_samples_leaf"],
+            max_features=model_cfg["max_features"],
+            max_depth=model_cfg["max_depth"],
+            criterion=model_cfg["criterion"],
+            bootstrap=model_cfg["bootstrap"],
             class_weight=model_cfg["class_weight"],
-            n_jobs=model_cfg["n_jobs"],
-            max_features=model_cfg["max_features"]
+            random_state=model_cfg["random_state"],
         )
 
     if name == XGBOOST:

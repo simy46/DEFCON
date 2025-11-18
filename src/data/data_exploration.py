@@ -7,6 +7,7 @@ Not imported in main.py.
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy.stats import chi2_contingency
 
 from config.consts import METADATA_TRAIN_PATH, TRAIN_NPZ_PATH, X_TRAIN_KEY, Y_TRAIN_KEY
 
@@ -95,6 +96,12 @@ def plot_pca_2d(X_pca, y=None):
     plt.show()
 
 
+def metadata_informative_test(metadata_train, y_train):
+    for col in ['Isolation type', 'Location', 'Create date', 'Organism group', 'Isolation source', 'Testing standard', 'Laboratory typing platform']:
+        contingency = pd.crosstab(metadata_train[col], y_train)
+        chi2, p_value, _, _ = chi2_contingency(contingency)
+        print(f"{col}: chi2={chi2:.2f}, p={p_value:.4f}")
+
 
 ## ENTRY POINT
 X_train, y_train = get_train_data()
@@ -108,3 +115,5 @@ print(preview_data(X_train))
 print("\nCheck for invalid values:")
 print("  NaN in X:", np.isnan(X_train).any())
 print("  Inf in X:", np.isinf(X_train).any())
+
+metadata_informative_test(meta, y_train)

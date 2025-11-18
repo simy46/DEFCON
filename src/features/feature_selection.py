@@ -1,7 +1,7 @@
 from typing import Tuple
 import numpy as np
 from numpy.typing import NDArray
-from sklearn.feature_selection import VarianceThreshold, SelectKBest, f_classif
+from sklearn.feature_selection import VarianceThreshold, SelectKBest, chi2
 from xgboost import XGBClassifier # type: ignore
 
 
@@ -80,7 +80,7 @@ def select_k_best_features(
         (X_train_selected, X_test_selected)
     """
     assert (X_train >= 0).all()
-    selector = SelectKBest(f_classif, k=k)
+    selector = SelectKBest(chi2, k=k)
 
     X_train_sel: NDArray = selector.fit_transform(X_train, y_train)
     X_test_sel: NDArray = selector.transform(X_test)
@@ -88,12 +88,11 @@ def select_k_best_features(
     return X_train_sel, X_test_sel
 
 
-def select_topk_xgboost(
+def select_xgboost_k_features(
     X_train: NDArray,
     y_train: NDArray,
     X_test: NDArray,
-    k: int,
-    random_state: int = 42
+    k: int
 ) -> Tuple[NDArray, NDArray]:
     """
     Select top-k most important features using XGBoost feature importance.
@@ -116,16 +115,16 @@ def select_topk_xgboost(
     """
 
     model = XGBClassifier(
-        n_estimators=200,
-        max_depth=6,
-        learning_rate=0.1,
-        subsample=0.8,
-        colsample_bytree=0.8,
+        n_estimators=300,
+        max_depth=5,
+        learning_rate=0.03,
+        subsample=0.7,
+        colsample_bytree=0.5,
         objective="binary:logistic",
         eval_metric="logloss",
         tree_method="hist",
         n_jobs=-1,
-        random_state=random_state
+        random_state=42
     )
 
     model.fit(X_train, y_train)
@@ -141,3 +140,38 @@ def select_topk_xgboost(
     X_test_sel = X_test[:, topk_idx]
 
     return X_train_sel, X_test_sel
+
+from typing import Tuple
+import numpy as np
+from numpy.typing import NDArray
+
+
+def select_top_variance_features(
+    X_train: NDArray,
+    X_test: NDArray,
+    k: int
+) -> Tuple[NDArray, NDArray]:
+    """
+    Select the top-k features with the highest variance in X_train.
+    Useful for high-dimensional genomic data where most features are constant.
+
+    Parameters
+    X_train : NDArray
+        Training matrix (n_samples, n_features).
+    X_test : NDArray
+        Test matrix with same number/order of features.
+    k : int
+        Number of highest-variance features to keep.
+
+    Returns
+    Tuple[NDArray, NDArray]
+        (X_train_selected, X_test_selected)
+    """
+
+    if k > X_train.shape[1]:
+        raise ValueError(f"k={k} > number of features={X_train.shape[1]}")
+
+    variances = X_train.var(axis=0)
+    topk_idx = np.argsort(variances)[::-1][:k]
+
+    return X_train[:, topk_idx], X_test[:, topk_idx]
