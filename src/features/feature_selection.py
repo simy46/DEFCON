@@ -88,12 +88,11 @@ def select_k_best_features(
     return X_train_sel, X_test_sel
 
 
-def select_topk_xgboost(
+def select_xgboost_k_features(
     X_train: NDArray,
     y_train: NDArray,
     X_test: NDArray,
-    k: int,
-    random_state: int = 42
+    k: int
 ) -> Tuple[NDArray, NDArray]:
     """
     Select top-k most important features using XGBoost feature importance.
