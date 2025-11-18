@@ -8,8 +8,8 @@
 import argparse
 import yaml
 
-from features.preprocessing import apply_preprocessing
 from src.utils.logging_utils import get_logger
+from src.features.preprocessing import apply_preprocessing
 from src.utils.timer import Timer
 from src.data.data_loader import load_test, load_train
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
