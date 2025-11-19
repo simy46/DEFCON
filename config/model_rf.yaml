@@ -53,3 +53,73 @@ preprocessing:
   select_first_k:
     enabled: false
     k: 150000
+  
+hyperoptimization:
+
+  type: optuna   # grid | random | optuna
+
+  # a value set to None will not be searched for optimization
+  # and we will take the value of the model defined at the beginning of this file
+
+  # -------------------
+  # RANDOM SEARCH
+  # -------------------
+  random:
+    n_iter: 40
+
+    n_estimators: None
+    criterion: None
+    max_depth: None
+    min_samples_split: None
+    min_samples_leaf: None
+    max_features: None
+    bootstrap: None
+    class_weight: None
+
+  # -------------------
+  # GRID SEARCH
+  # -------------------
+  grid:
+    n_estimators: None
+    criterion: None
+    max_depth: None
+    min_samples_split: None
+    min_samples_leaf: None
+    max_features: None
+    bootstrap: None
+    class_weight: None
+
+  # -------------------
+  # OPTUNA SEARCH
+  # -------------------
+  optuna:
+    n_trials: 100
+
+    n_estimators:
+      type: int
+      low: 200
+      high: 2000
+
+    criterion: None
+
+    max_depth:
+      type: int
+      low: 5
+      high: 40
+
+    min_samples_split:
+      type: int
+      low: 2
+      high: 20
+
+    min_samples_leaf:
+      type: int
+      low: 1
+      high: 10
+
+    max_features:
+      type: categorical
+      values: ["sqrt", "log2", 0.2, 0.5, 0.8]
+
+    bootstrap: None
+    class_weight: None
