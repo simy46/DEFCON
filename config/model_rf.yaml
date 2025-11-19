@@ -80,14 +80,15 @@ hyperoptimization:
   # GRID SEARCH
   # -------------------
   grid:
-    n_estimators: None
-    criterion: None
-    max_depth: None
-    min_samples_split: None
-    min_samples_leaf: None
+    n_estimators: [500, 1000, 1500]
+    criterion: ["gini", "entropy"]
+    max_depth: [10, 20, 30]
+    min_samples_split: [2, 5]
+    min_samples_leaf: [1, 2]
     max_features: None
     bootstrap: None
     class_weight: None
+
 
   # -------------------
   # OPTUNA SEARCH
@@ -108,14 +109,16 @@ hyperoptimization:
       high: 40
 
     min_samples_split:
-      type: int
-      low: 2
-      high: 20
+      None
+      # type: int
+      # low: 2
+      # high: 20
 
     min_samples_leaf:
-      type: int
-      low: 1
-      high: 10
+      None
+      # type: int
+      # low: 1
+      # high: 10
 
     max_features:
       type: categorical
