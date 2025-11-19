@@ -98,27 +98,25 @@ hyperoptimization:
 
     n_estimators:
       type: int
-      low: 200
-      high: 2000
+      low: 600
+      high: 1800
 
     criterion: None
 
     max_depth:
       type: int
-      low: 5
-      high: 40
+      low: 10
+      high: 35
 
     min_samples_split:
-      None
-      # type: int
-      # low: 2
-      # high: 20
+      type: int
+      low: 2
+      high: 15
 
     min_samples_leaf:
-      None
-      # type: int
-      # low: 1
-      # high: 10
+      type: int
+      low: 1
+      high: 16
 
     max_features:
       type: categorical
