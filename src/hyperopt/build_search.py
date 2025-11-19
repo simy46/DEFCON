@@ -1,4 +1,5 @@
-from typing import Dict, Any
+from typing import Dict, Tuple, Union
+from numpy.typing import NDArray
 from sklearn.base import BaseEstimator
 
 from .grid_random_search import build_grid_search, build_random_search
@@ -7,11 +8,32 @@ from config.consts import GRID_SEARCH_MODE, RANDOM_MODE, OPTUNA_MODE, DEFAULT_SC
 
 def build_search(
     model: BaseEstimator,
-    search_space: Dict[str, Any],
-    cfg: Dict[str, Any],
-    X_train=None,
-    y_train=None
-):
+    search_space: Dict[str, object],
+    cfg: Dict[str, object],
+    X_train: NDArray,
+    y_train: NDArray
+) -> Union[BaseEstimator, Tuple[Dict[str, object], float]]:
+    """
+    Build the hyperparameter search strategy (grid, random, or optuna).
+
+    Parameters
+    model : BaseEstimator
+        Model without the optimized hyperparameters.
+    search_space : dict
+        Hyperparameters to optimize (params != None).
+    cfg : dict
+        Global YAML configuration.
+    X_train : NDArray
+        Training feature matrix.
+    y_train : NDArray
+        Training labels.
+
+    Returns
+    BaseEstimator or (dict, float)
+        Search estimator (GridSearchCV/RandomizedSearchCV)
+        or (best_params, best_score) for Optuna.
+    """
+
     hyper = cfg["hyperoptimization"]
     mode = hyper["type"]
     cv_folds = cfg["model"]["cv_folds"]
@@ -23,7 +45,7 @@ def build_search(
             cv_folds=cv_folds,
             scoring=DEFAULT_SCORING_METRIC,
             n_jobs=-1,
-            verbose=3
+            verbose=3,
         )
 
     elif mode == RANDOM_MODE:
@@ -34,20 +56,17 @@ def build_search(
             cv_folds=cv_folds,
             scoring=DEFAULT_SCORING_METRIC,
             n_jobs=-1,
-            verbose=3
+            verbose=3,
         )
 
     elif mode == OPTUNA_MODE:
-        if X_train is None or y_train is None:
-            raise ValueError("Optuna requires X_train and y_train")
-
         best_params, best_score = run_optuna(
             X=X_train,
             y=y_train,
             model=model,
             search_space=search_space,
             cv_folds=cv_folds,
-            n_trials=hyper["optuna"]["n_trials"]
+            n_trials=hyper["optuna"]["n_trials"],
         )
         return best_params, best_score
 
