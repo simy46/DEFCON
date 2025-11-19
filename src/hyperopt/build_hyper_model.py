@@ -25,7 +25,8 @@ def build_model(
     search_space: Dict[str, Any] = {
         param: values
         for param, values in section.items()
-        if param not in UNWANTED_SEARCH_KEYS and values is not None
+        if param not in UNWANTED_SEARCH_KEYS
+        and isinstance(values, dict)
     }
 
     base_params: Dict[str, Any] = {
