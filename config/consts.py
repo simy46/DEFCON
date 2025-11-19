@@ -31,3 +31,11 @@ LOGISTIC_REGRESSION = 'logistic_regression'
 LINEAR_SVM = 'linear_svm'
 RANDOM_FOREST = 'random_forest'
 XGBOOST = 'xgboost'
+
+# SEARCH MODE
+RANDOM_MODE = 'random'
+GRID_SEARCH_MODE = 'grid'
+OPTUNA_MODE = 'optuna'
+
+# SCORE METRIC
+DEFAULT_SCORING_METRIC = 'f1_macro'
