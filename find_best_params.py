@@ -12,17 +12,18 @@ from src.utils.logging_utils import get_logger
 from src.features.preprocessing import apply_preprocessing
 from src.utils.timer import Timer
 from src.data.data_loader import load_test, load_train
+from hyperopt.build_hyper_model import build_model
+from hyperopt.build_search import build_search
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-from sklearn.ensemble import RandomForestClassifier
 
 # -----------------------------------
 # Parse command line arguments
 # -----------------------------------
 parser = argparse.ArgumentParser(
     description="Run the full ML pipeline. Example:\n"
-                "  python main.py --config config/model_lr.yaml\n"
+                "  python main.py --config config/model_rf.yaml\n"
                 "Available model configs:\n"
-                "  - config/model_lr.yaml\n"
+                "  - config/model_rf.yaml\n"
                 "  - config/model_svm.yaml\n"
                 "  - config/model_xgb.yaml\n",
     formatter_class=argparse.RawTextHelpFormatter
@@ -32,7 +33,7 @@ parser.add_argument(
     "--config",
     type=str,
     required=True,
-    help="Path to the YAML config file (ex: config/model_lr.yaml)"
+    help="Path to the YAML config file (ex: config/model_rf.yaml)"
 )
 
 args = parser.parse_args()
@@ -58,8 +59,8 @@ with Timer("Loading training data..."):
 # -----------------------------------
 # Preprocessing
 # -----------------------------------
-with Timer("Preprocessing data..."):
-    X_train_prep, X_test_prep = apply_preprocessing(
+with Timer("Preprocessing data..."): 
+    X_train_prep, X_test_prep = apply_preprocessing( # here we assume that the data preprocessing step is optimized
         X_train=X_train, 
         X_test=X_test, 
         y_train=y_train,
@@ -73,56 +74,26 @@ with Timer("Preprocessing data..."):
 # Build Model
 # -----------------------------------
 model_cfg = cfg["model"]
-assert model_cfg["name"] == "random_forest"
-
-rf = RandomForestClassifier(
-    n_jobs=model_cfg["n_jobs"],
-        criterion=model_cfg["criterion"],
-        bootstrap=model_cfg["bootstrap"],
-        class_weight=model_cfg["class_weight"],
-        random_state=model_cfg["random_state"],
-    )
+hyperop_cfg = cfg["hyperoptimization"]
+assert model_cfg["name"] == "random_forest" # we could work on xgboost too
 
 
 # -----------------------------------
-# HYPERPARAMETER SEARCH SPACE
+# MODEL & HYPERPARAMETER SEARCH SPACE
 # -----------------------------------
-param_grid = {
-    "n_estimators": [500, 800, 1200, 1500],
-    "max_depth": [10, 15, 20, 25, 30],
-    "min_samples_split": [2, 5, 10],
-    "min_samples_leaf": [1, 2, 4],
-    "max_features": ["sqrt", 0.3, 0.5],
-}
+rf, search_space = build_model(model_cfg, hyperop_cfg)
 
 
 # -----------------------------------
-# RandomizedSearch or GridSearch
+# RandomizedSearch, GridSearch or Optuna
 # -----------------------------------
-SEARCH_MODE = "random"  # or "grid"
-
-logger.info(f"Running hyperparameter search: {SEARCH_MODE}")
-
-if SEARCH_MODE == "grid":
-    search = GridSearchCV(
-        rf,
-        param_grid=param_grid,
-        cv=model_cfg["cv_folds"],
-        verbose=3,
-        n_jobs=-1
-    )
-else:
-    search = RandomizedSearchCV(
-        rf,
-        param_distributions=param_grid,
-        n_iter=20,                 # Number of random combinations
-        cv=model_cfg["cv_folds"],
-        verbose=3,
-        n_jobs=-1,
-        random_state=42,
-        scoring="f1_macro",
-        refit=True
-    )
+search = build_search(
+    model=rf,
+    search_space=search_space,
+    cfg=cfg,
+    X_train=X_train_prep,
+    y_train=y_train
+)
 
 
 # -----------------------------------
