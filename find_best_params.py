@@ -8,6 +8,7 @@
 import argparse
 import yaml
 
+from config.consts import GRID_SEARCH_MODE, OPTUNA_MODE, RANDOM_MODE
 from src.utils.logging_utils import get_logger
 from src.features.preprocessing import apply_preprocessing
 from src.utils.timer import Timer
@@ -83,6 +84,10 @@ assert model_cfg["name"] == "random_forest" # we could work on xgboost too
 # -----------------------------------
 rf, search_space = build_model(model_cfg, hyperop_cfg)
 
+# -----------------------------------
+# Determine optimization mode
+# -----------------------------------
+mode = cfg["hyperoptimization"]["type"]
 
 # -----------------------------------
 # RandomizedSearch, GridSearch or Optuna
@@ -95,22 +100,27 @@ search = build_search(
     y_train=y_train
 )
 
-
 # -----------------------------------
 # Run search
 # -----------------------------------
-with Timer("Hyperparameter search..."):
-    search.fit(X_train_prep, y_train)
+if mode in (RANDOM_MODE, GRID_SEARCH_MODE):
+    with Timer("Hyperparameter search..."):
+        search.fit(X_train_prep, y_train)
+
+    best_score = search.best_score_
+    best_params = search.best_params_
+
+elif mode == OPTUNA_MODE:
+    best_params, best_score = search
 
 
-logger.info(f"Best score: {search.best_score_}")
-logger.info(f"Best params: {search.best_params_}")
+logger.info(f"Best score: {best_score}")
+logger.info(f"Best params: {best_params}")
 
 
 # -----------------------------------
 # Save best params back to the config file
 # -----------------------------------
-best_params = search.best_params_
 cfg["model"].update(best_params)
 
 output_file = f"{args.config.replace('.yaml', '')}_best.yaml"
