@@ -13,8 +13,8 @@ from src.utils.logging_utils import get_logger
 from src.features.preprocessing import apply_preprocessing
 from src.utils.timer import Timer
 from src.data.data_loader import load_test, load_train
-from hyperopt.build_hyper_model import build_model
-from hyperopt.build_search import build_search
+from src.hyperopt.build_hyper_model import build_model
+from src.hyperopt.build_search import build_search
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
 # -----------------------------------
