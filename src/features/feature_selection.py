@@ -9,7 +9,7 @@ from xgboost import XGBClassifier
 # FEATURE SELECTION CONSTANTS
 # ============================================================
 
-VARIANCE_THRESHOLD = 0.0003
+VARIANCE_AXIS = 0
 TOP_VARIANCE_K = 10000
 K_BEST_CHI2_K = 20000
 XGB_SELECTOR_K = 200
@@ -196,7 +196,7 @@ def select_top_variance_features(
     if k > X_train.shape[1]:
         raise ValueError(f"k={k} > number of features={X_train.shape[1]}")
 
-    variances = X_train.var(axis=0)
+    variances = X_train.var(axis=VARIANCE_AXIS)
     topk_idx = np.argsort(variances)[::-1][:k]
 
     return X_train[:, topk_idx], X_test[:, topk_idx]
