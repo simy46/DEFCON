@@ -2,7 +2,7 @@ from typing import Tuple
 import numpy as np
 from numpy.typing import NDArray
 from sklearn.feature_selection import VarianceThreshold, SelectKBest, chi2
-from xgboost import XGBClassifier # type: ignore
+from xgboost import XGBClassifier
 
 
 # ============================================================
