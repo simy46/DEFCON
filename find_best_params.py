@@ -76,13 +76,13 @@ with Timer("Preprocessing data..."):
 # -----------------------------------
 model_cfg = cfg["model"]
 hyperop_cfg = cfg["hyperoptimization"]
-assert model_cfg["name"] == "random_forest" # we could work on xgboost too
+# assert model_cfg["name"] == "random_forest" # we could work on xgboost too
 
 
 # -----------------------------------
 # MODEL & HYPERPARAMETER SEARCH SPACE
 # -----------------------------------
-rf, search_space = build_model(model_cfg, hyperop_cfg)
+md, search_space = build_model(model_cfg, hyperop_cfg)
 
 # -----------------------------------
 # Determine optimization mode
@@ -93,7 +93,7 @@ mode = cfg["hyperoptimization"]["type"]
 # RandomizedSearch, GridSearch or Optuna
 # -----------------------------------
 search = build_search(
-    model=rf,
+    model=md,
     search_space=search_space,
     cfg=cfg,
     X_train=X_train_prep,
