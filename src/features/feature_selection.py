@@ -5,6 +5,28 @@ from sklearn.feature_selection import VarianceThreshold, SelectKBest, chi2
 from xgboost import XGBClassifier # type: ignore
 
 
+# ============================================================
+# FEATURE SELECTION CONSTANTS
+# ============================================================
+
+VARIANCE_THRESHOLD = 0.0003
+TOP_VARIANCE_K = 10000
+K_BEST_CHI2_K = 20000
+XGB_SELECTOR_K = 200
+FIRST_K = 200000
+
+XGB_SELECTOR_N_EST = 100
+XGB_SELECTOR_MAX_DEPTH = 4
+XGB_SELECTOR_LEARNING_RATE = 0.01
+XGB_SELECTOR_SUBSAMPLE = 0.5
+XGB_SELECTOR_COLSAMPLE = 0.4
+XGB_OBJECTIVE = "binary:logistic"
+XGB_EVAL_METRIC = "logloss"
+XGB_TREE_METHOD = "hist"
+XGB_N_JOBS = -1
+RANDOM_STATE = 42
+
+
 def filter_low_variance_features(
     X_train: NDArray,
     X_test: NDArray,
@@ -115,16 +137,16 @@ def select_xgboost_k_features(
     """
 
     model = XGBClassifier(
-        n_estimators=300,
-        max_depth=5,
-        learning_rate=0.03,
-        subsample=0.7,
-        colsample_bytree=0.5,
-        objective="binary:logistic",
-        eval_metric="logloss",
-        tree_method="hist",
-        n_jobs=-1,
-        random_state=42
+        n_estimators=XGB_SELECTOR_N_EST,
+        max_depth=XGB_SELECTOR_MAX_DEPTH,
+        learning_rate=XGB_SELECTOR_LEARNING_RATE,
+        subsample=XGB_SELECTOR_SUBSAMPLE,
+        colsample_bytree=XGB_SELECTOR_COLSAMPLE,
+        objective=XGB_OBJECTIVE,
+        eval_metric=XGB_EVAL_METRIC,
+        tree_method=XGB_TREE_METHOD,
+        n_jobs=XGB_N_JOBS,
+        random_state=RANDOM_STATE
     )
 
     model.fit(X_train, y_train)
@@ -140,6 +162,9 @@ def select_xgboost_k_features(
     X_test_sel = X_test[:, topk_idx]
 
     return X_train_sel, X_test_sel
+
+
+
 
 from typing import Tuple
 import numpy as np
