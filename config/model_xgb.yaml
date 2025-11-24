@@ -96,50 +96,50 @@ hyperoptimization:
   # OPTUNA SEARCH
   # -------------------
   optuna:
-    n_trials: 200
+    n_trials: 80 
 
     eta:
       type: float
-      low: 0.01
-      high: 0.3
+      low: 0.03
+      high: 0.25
       log: true
 
     max_depth:
       type: int
-      low: 3
+      low: 7
       high: 14
 
     min_child_weight:
       type: int
       low: 1
-      high: 12
+      high: 6
 
     subsample:
       type: float
-      low: 0.4
-      high: 1.0
+      low: 0.80
+      high: 1.00
 
     colsample_bytree:
       type: float
-      low: 0.3
-      high: 1.0
+      low: 0.70
+      high: 1.00
 
     lambda:
       type: float
-      low: 0.01
+      low: 0.1
       high: 15.0
       log: true
 
     alpha:
       type: float
-      low: 0.0
-      high: 10.0
+      low: 0.01
+      high: 7.0
       log: true
 
     n_estimators:
       type: int
-      low: 300
-      high: 2000
+      low: 500
+      high: 1400
 
     booster: None
     tree_method: None
