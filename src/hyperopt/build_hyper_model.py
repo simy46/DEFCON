@@ -1,23 +1,25 @@
 from __future__ import annotations
 from typing import Dict, Any, Tuple
 from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 
 UNWANTED_MODEL_KEYS = {"name", "cv_folds"}
 UNWANTED_SEARCH_KEYS = {"n_iter", "n_trials"}
+
+MODEL_FACTORY = {
+    "random_forest": RandomForestClassifier,
+    "xgboost": XGBClassifier,
+    "logreg": LogisticRegression,
+    "svm": SVC
+}
 
 
 def build_model(
     model_cfg: Dict[str, Any],
     hyper_cfg: Dict[str, Any]
-) -> Tuple[RandomForestClassifier, Dict[str, Any]]:
-    """
-    Build a RandomForestClassifier model using model_cfg, excluding
-    hyperparameters that will be optimized in hyper_cfg.
-
-    Returns:
-        model (RandomForestClassifier)
-        search_space (Dict[str, Any]) - only params to optimize
-    """
+) -> Tuple[Any, Dict[str, Any]]:
 
     mode: str = hyper_cfg["type"]
     section: Dict[str, Any] = hyper_cfg[mode]
@@ -35,6 +37,13 @@ def build_model(
         if key not in search_space and key not in UNWANTED_MODEL_KEYS
     }
 
-    model = RandomForestClassifier(**base_params)
+    name = model_cfg["name"]
+
+    if name not in MODEL_FACTORY:
+        raise ValueError(f"Unknown model '{name}'")
+
+    ModelClass = MODEL_FACTORY[name]
+
+    model = ModelClass(**base_params)
 
     return model, search_space
