@@ -1,6 +1,4 @@
 from numpy.typing import NDArray
-import numpy as np
-from pandas import DataFrame
 
 def predict_model(model, X_test: NDArray) -> NDArray:
     """

@@ -62,7 +62,7 @@ def apply_preprocessing(
         k = select_var_k["k"]
         logger.info(f"Selecting top {k} most informative features via Variance ...")
         X_train, X_test = select_top_variance_features(X_train, X_test, k)
-        logger.info(f"After SelectKBest: X_train={X_train.shape}, X_test={X_test.shape}")
+        logger.info(f"After Var K select: X_train={X_train.shape}, X_test={X_test.shape}")
 
     # ---------------------------------------------
     # Select K Best (supervised)

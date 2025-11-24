@@ -36,7 +36,7 @@ preprocessing:
 
   variance_threshold:
     enabled: true
-    threshold: 0.002
+    threshold: 0.01
   
   select_variance_k:
     enabled: false
@@ -53,3 +53,96 @@ preprocessing:
   select_first_k:
     enabled: false
     k: 150000
+  
+hyperoptimization:
+
+  type: optuna   # grid | random | optuna
+
+  # a value set to None will not be searched for optimization
+  # and we will take the value of the model defined at the beginning of this file
+
+  # -------------------
+  # RANDOM SEARCH
+  # -------------------
+  random:
+    n_iter: 40
+
+    n_estimators: None
+    criterion: None
+    max_depth: None
+    min_samples_split: None
+    min_samples_leaf: None
+    max_features: None
+    bootstrap: None
+    class_weight: None
+
+  # -------------------
+  # GRID SEARCH
+  # -------------------
+  grid:
+    n_estimators: [500, 1000, 1500]
+    criterion: ["gini", "entropy"]
+    max_depth: [10, 20, 30]
+    min_samples_split: [2, 5]
+    min_samples_leaf: [1, 2]
+    max_features: None
+    bootstrap: None
+    class_weight: None
+
+
+  # -------------------
+  # OPTUNA SEARCH
+  # -------------------
+  hyperoptimization:
+  type: optuna
+
+  optuna:
+    n_trials: 80
+
+    eta:
+      type: float
+      low: 0.03
+      high: 0.25
+      log: true
+
+    max_depth:
+      type: int
+      low: 7
+      high: 14
+
+    min_child_weight:
+      type: int
+      low: 1
+      high: 6
+
+    subsample:
+      type: float
+      low: 0.80
+      high: 1.00
+
+    colsample_bytree:
+      type: float
+      low: 0.70
+      high: 1.00
+
+    lambda:
+      type: float
+      low: 0.1
+      high: 15.0
+      log: true
+
+    alpha:
+      type: float
+      low: 0.01
+      high: 7.0
+      log: true
+
+    n_estimators:
+      type: int
+      low: 500
+      high: 1400
+
+    booster: None
+    tree_method: None
+    max_bin: None
+    eval_metric: None

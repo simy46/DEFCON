@@ -8,21 +8,23 @@
 import argparse
 import yaml
 
+from config.consts import GRID_SEARCH_MODE, OPTUNA_MODE, RANDOM_MODE
 from src.utils.logging_utils import get_logger
 from src.features.preprocessing import apply_preprocessing
 from src.utils.timer import Timer
 from src.data.data_loader import load_test, load_train
+from src.hyperopt.build_hyper_model import build_model
+from src.hyperopt.build_search import build_search
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-from sklearn.ensemble import RandomForestClassifier
 
 # -----------------------------------
 # Parse command line arguments
 # -----------------------------------
 parser = argparse.ArgumentParser(
     description="Run the full ML pipeline. Example:\n"
-                "  python main.py --config config/model_lr.yaml\n"
+                "  python main.py --config config/model_rf.yaml\n"
                 "Available model configs:\n"
-                "  - config/model_lr.yaml\n"
+                "  - config/model_rf.yaml\n"
                 "  - config/model_svm.yaml\n"
                 "  - config/model_xgb.yaml\n",
     formatter_class=argparse.RawTextHelpFormatter
@@ -32,7 +34,7 @@ parser.add_argument(
     "--config",
     type=str,
     required=True,
-    help="Path to the YAML config file (ex: config/model_lr.yaml)"
+    help="Path to the YAML config file (ex: config/model_rf.yaml)"
 )
 
 args = parser.parse_args()
@@ -58,8 +60,8 @@ with Timer("Loading training data..."):
 # -----------------------------------
 # Preprocessing
 # -----------------------------------
-with Timer("Preprocessing data..."):
-    X_train_prep, X_test_prep = apply_preprocessing(
+with Timer("Preprocessing data..."): 
+    X_train_prep, X_test_prep = apply_preprocessing( # here we assume that the data preprocessing step is optimized
         X_train=X_train, 
         X_test=X_test, 
         y_train=y_train,
@@ -73,73 +75,52 @@ with Timer("Preprocessing data..."):
 # Build Model
 # -----------------------------------
 model_cfg = cfg["model"]
-assert model_cfg["name"] == "random_forest"
-
-rf = RandomForestClassifier(
-    n_jobs=model_cfg["n_jobs"],
-        criterion=model_cfg["criterion"],
-        bootstrap=model_cfg["bootstrap"],
-        class_weight=model_cfg["class_weight"],
-        random_state=model_cfg["random_state"],
-    )
+hyperop_cfg = cfg["hyperoptimization"]
+# assert model_cfg["name"] == "random_forest" # we could work on xgboost too
 
 
 # -----------------------------------
-# HYPERPARAMETER SEARCH SPACE
+# MODEL & HYPERPARAMETER SEARCH SPACE
 # -----------------------------------
-param_grid = {
-    "n_estimators": [500, 800, 1200, 1500],
-    "max_depth": [10, 15, 20, 25, 30],
-    "min_samples_split": [2, 5, 10],
-    "min_samples_leaf": [1, 2, 4],
-    "max_features": ["sqrt", 0.3, 0.5],
-}
-
+md, search_space = build_model(model_cfg, hyperop_cfg)
 
 # -----------------------------------
-# RandomizedSearch or GridSearch
+# Determine optimization mode
 # -----------------------------------
-SEARCH_MODE = "random"  # or "grid"
+mode = cfg["hyperoptimization"]["type"]
 
-logger.info(f"Running hyperparameter search: {SEARCH_MODE}")
-
-if SEARCH_MODE == "grid":
-    search = GridSearchCV(
-        rf,
-        param_grid=param_grid,
-        cv=model_cfg["cv_folds"],
-        verbose=3,
-        n_jobs=-1
-    )
-else:
-    search = RandomizedSearchCV(
-        rf,
-        param_distributions=param_grid,
-        n_iter=20,                 # Number of random combinations
-        cv=model_cfg["cv_folds"],
-        verbose=3,
-        n_jobs=-1,
-        random_state=42,
-        scoring="f1_macro",
-        refit=True
-    )
-
+# -----------------------------------
+# RandomizedSearch, GridSearch or Optuna
+# -----------------------------------
+search = build_search(
+    model=md,
+    search_space=search_space,
+    cfg=cfg,
+    X_train=X_train_prep,
+    y_train=y_train
+)
 
 # -----------------------------------
 # Run search
 # -----------------------------------
-with Timer("Hyperparameter search..."):
-    search.fit(X_train_prep, y_train)
+if mode in (RANDOM_MODE, GRID_SEARCH_MODE):
+    with Timer("Hyperparameter search..."):
+        search.fit(X_train_prep, y_train)
+
+    best_score = search.best_score_
+    best_params = search.best_params_
+
+elif mode == OPTUNA_MODE:
+    best_params, best_score = search
 
 
-logger.info(f"Best score: {search.best_score_}")
-logger.info(f"Best params: {search.best_params_}")
+logger.info(f"Best score: {best_score}")
+logger.info(f"Best params: {best_params}")
 
 
 # -----------------------------------
 # Save best params back to the config file
 # -----------------------------------
-best_params = search.best_params_
 cfg["model"].update(best_params)
 
 output_file = f"{args.config.replace('.yaml', '')}_best.yaml"
