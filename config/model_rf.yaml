@@ -93,34 +93,56 @@ hyperoptimization:
   # -------------------
   # OPTUNA SEARCH
   # -------------------
+  hyperoptimization:
+  type: optuna
+
   optuna:
-    n_trials: 100
+    n_trials: 80
 
-    n_estimators:
-      type: int
-      low: 600
-      high: 1800
-
-    criterion: None
+    eta:
+      type: float
+      low: 0.03
+      high: 0.25
+      log: true
 
     max_depth:
       type: int
-      low: 10
-      high: 35
+      low: 7
+      high: 14
 
-    min_samples_split:
-      type: int
-      low: 2
-      high: 15
-
-    min_samples_leaf:
+    min_child_weight:
       type: int
       low: 1
-      high: 16
+      high: 6
 
-    max_features:
-      type: categorical
-      values: ["sqrt", "log2", 0.2, 0.5, 0.8]
+    subsample:
+      type: float
+      low: 0.80
+      high: 1.00
 
-    bootstrap: None
-    class_weight: None
+    colsample_bytree:
+      type: float
+      low: 0.70
+      high: 1.00
+
+    lambda:
+      type: float
+      low: 0.1
+      high: 15.0
+      log: true
+
+    alpha:
+      type: float
+      low: 0.01
+      high: 7.0
+      log: true
+
+    n_estimators:
+      type: int
+      low: 500
+      high: 1400
+
+    booster: None
+    tree_method: None
+    max_bin: None
+    eval_metric: None
