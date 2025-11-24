@@ -7,10 +7,10 @@ model:
   min_child_weight: 5
 
   subsample: 0.75
-  colsample_bytree: 0.5
+  colsample_bytree: 0.50
 
-  reg_lambda: 5.0
-  reg_alpha: 1.0
+  reg_lambda: 10.0
+  reg_alpha: 2.0
 
   n_estimators: 500
   tree_method: hist
@@ -47,7 +47,7 @@ preprocessing:
     
   select_xgboost_k:
     enabled: true
-    k: 20000
+    k: 200
 
   select_k_best:
     enabled: false
@@ -56,90 +56,63 @@ preprocessing:
   select_first_k:
     enabled: false
     k: 200000
+
 hyperoptimization:
 
-  type: optuna   # grid | random | optuna
+  type: optuna
 
-  # a value set to None will not be searched for optimization
-  # and we will take the value of the model defined at the beginning of this file
-
-  # -------------------
-  # RANDOM SEARCH
-  # -------------------
   random:
     n_iter: 40
-
     n_estimators: None
-    criterion: None
-    max_depth: None
-    min_samples_split: None
-    min_samples_leaf: None
-    max_features: None
-    bootstrap: None
-    class_weight: None
 
-  # -------------------
-  # GRID SEARCH
-  # -------------------
   grid:
     n_estimators: [500, 1000, 1500]
-    criterion: ["gini", "entropy"]
-    max_depth: [10, 20, 30]
-    min_samples_split: [2, 5]
-    min_samples_leaf: [1, 2]
-    max_features: None
-    bootstrap: None
-    class_weight: None
 
-
-  # -------------------
-  # OPTUNA SEARCH
-  # -------------------
   optuna:
-    n_trials: 80 
+    n_trials: 80
 
     eta:
       type: float
-      low: 0.03
-      high: 0.25
+      low: 0.01
+      high: 0.15
       log: true
 
     max_depth:
       type: int
-      low: 7
-      high: 14
+      low: 4
+      high: 10
 
     min_child_weight:
       type: int
-      low: 1
-      high: 6
+      low: 3
+      high: 9
 
     subsample:
       type: float
-      low: 0.80
-      high: 1.00
+      low: 0.50
+      high: 0.90
 
     colsample_bytree:
       type: float
-      low: 0.70
-      high: 1.00
+      low: 0.40
+      high: 0.85
 
     reg_lambda:
       type: float
-      low: 0.1
-      high: 15.0
+      low: 5.0
+      high: 200.0
       log: true
 
     reg_alpha:
       type: float
-      low: 0.01
-      high: 7.0
+      low: 1.0
+      high: 100.0
       log: true
 
     n_estimators:
       type: int
-      low: 500
-      high: 1400
+      low: 300
+      high: 1200
 
     booster: None
     tree_method: None
