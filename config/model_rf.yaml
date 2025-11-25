@@ -53,6 +53,16 @@ preprocessing:
   select_first_k:
     enabled: false
     k: 150000
+
+  lda:
+    enabled: false
+    mode: "shrinkage"   # "classic", "regularized", "shrinkage", "kernel"
+    n_components: 10
+    shrinkage_value: null
+    kernel: null        # "rbf", "poly", "linear", "sigmoid"
+    gamma: null
+    degree: 3
+    coef0: 1.0
   
 hyperoptimization:
 

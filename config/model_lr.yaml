@@ -44,3 +44,13 @@ preprocessing:
   select_first_k:
     enabled: false
     k: 10000
+
+  lda:
+    enabled: false
+    mode: "shrinkage"   # "classic", "regularized", "shrinkage", "kernel"
+    n_components: 10
+    shrinkage_value: null
+    kernel: "rbf"       # "rbf", "poly", "linear", "sigmoid"
+    gamma: 
+    degree: 3
+    coef0: 1.0

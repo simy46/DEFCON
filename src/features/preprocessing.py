@@ -14,6 +14,7 @@ from .feature_selection import (
     select_xgboost_k_features
 )
 from .pca import apply_pca
+from .lda import apply_lda
 from .encode_metadata import encode_metadata
 
 logger = logging.getLogger(LOG_FILE_PREFIX)
@@ -128,6 +129,42 @@ def apply_preprocessing(
         logger.info(f"Applying StandardScaler(with_mean={with_mean}) ...")
         X_train, X_test = normalize_data(X_train, X_test, with_mean)
         logger.info(f"After normalization: X_train={X_train.shape}, X_test={X_test.shape}")
+
+    # ---------------------------------------------
+    # Auto-disable PCA if LDA is enabled
+    # ---------------------------------------------
+    lda_cfg = pp.get("lda", {})
+    if lda_cfg.get("enabled", False) and pca["enabled"]:
+        logger.warning("LDA is enabled → PCA will be automatically disabled to avoid overriding LDA output.")
+        pca["enabled"] = False
+
+    # ---------------------------------------------
+    # LDA
+    # ---------------------------------------------
+    lda_cfg = pp.get("lda", {})
+    if lda_cfg.get("enabled", False):
+        mode = lda_cfg.get("mode", "classic")
+        n_components = lda_cfg.get("n_components", None)
+        shrinkage_value = lda_cfg.get("shrinkage_value", None)
+        kernel = lda_cfg.get("kernel", None)
+        gamma = lda_cfg.get("gamma", None)
+        degree = lda_cfg.get("degree", 3)
+        coef0 = lda_cfg.get("coef0", 1.0)
+
+        logger.info(f"Applying LDA(mode={mode}) ...")
+        X_train, X_test = apply_lda(
+            X_train=X_train,
+            X_test=X_test,
+            y_train=y_train,
+            mode=mode,
+            n_components=n_components,
+            shrinkage_value=shrinkage_value,
+            kernel=kernel,
+            gamma=gamma,
+            degree=degree,
+            coef0=coef0
+        )
+        logger.info(f"After LDA: X_train={X_train.shape}, X_test={X_test.shape}")
 
 
     # ---------------------------------------------
