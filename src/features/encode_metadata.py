@@ -11,7 +11,6 @@ def encode_metadata(
 ) -> Tuple[NDArray, NDArray]:
     """
     One-hot encode specified categorical metadata columns.
-
     Args:
         metadata_train (DataFrame):
             Metadata associated with training samples.
@@ -19,14 +18,12 @@ def encode_metadata(
             Metadata associated with test samples.
         columns (List[str]):
             List of column names (categorical) to encode.
-
     Returns:
         Tuple[NDArray, NDArray]:
             - Encoded training metadata as dense NumPy array.
             - Encoded test metadata as dense NumPy array.
     """
     encoder = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
-
     train_encoded: NDArray = encoder.fit_transform(metadata_train[columns])
     test_encoded: NDArray = encoder.transform(metadata_test[columns])
 

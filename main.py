@@ -47,10 +47,10 @@ args = parser.parse_args()
 # Load YAML config
 # -----------------------------------
 with open(args.config, "r") as f:
-    cfg = yaml.safe_load(f)
+    config = yaml.safe_load(f)
 
 logger, timestamp = get_logger()
-logger.info(f"Loaded config ({args.config})" + yaml.dump(cfg, sort_keys=False))
+logger.info(f"Loaded config ({args.config})" + yaml.dump(config, sort_keys=False))
 
 # -----------------------------------
 # Load training and test data
@@ -71,14 +71,14 @@ with Timer("Preprocessing data..."):
         y_train=y_train,
         metadata_train=metadata_train, 
         metadata_test=metadata_test, 
-        cfg=cfg
+        cfg=config
     )
 
 # -----------------------------------
 # Train model
 # -----------------------------------
 with Timer("Training model..."):
-    model = train_model(X_train, y_train, cfg)
+    model = train_model(X_train, y_train, config)
 
 # -----------------------------------
 # Predict on test

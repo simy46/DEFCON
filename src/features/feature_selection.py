@@ -86,27 +86,24 @@ def select_k_best_features(
 ) -> Tuple[NDArray, NDArray]:
     """
     Select the top-k most informative features (supervised).
-
-    Parameters
-    X_train : NDArray
-        Training feature matrix.
-    y_train : NDArray
-        Training labels.
-    X_test : NDArray
-        Test feature matrix.
-    k : int
-        Number of best features to keep.
-
-    Returns
-    Tuple[NDArray, NDArray]
-        (X_train_selected, X_test_selected)
+    Args:
+        X_train (NDArray):
+            Training feature matrix.
+        y_train (NDArray):
+            Training labels.
+        X_test (NDArray):
+            Test feature matrix.
+        k (int):
+            Number of best features to keep.
+    Returns:
+        Tuple[NDArray, NDArray]:
+            Tuple containing (X_train_selected, X_test_selected), where each array
+            contains only the k most informative features.
     """
     assert (X_train >= 0).all()
     selector = SelectKBest(chi2, k=k)
-
-    X_train_sel: NDArray = selector.fit_transform(X_train, y_train)
-    X_test_sel: NDArray = selector.transform(X_test)
-
+    X_train_sel = selector.fit_transform(X_train, y_train)
+    X_test_sel = selector.transform(X_test)
     return X_train_sel, X_test_sel
 
 
@@ -151,24 +148,12 @@ def select_xgboost_k_features(
 
     model.fit(X_train, y_train)
     importances = model.feature_importances_
-
     if importances is None or len(importances) == 0:
         raise RuntimeError("XGBoost returned no feature importances. Cannot rank features.")
-
     indices = np.argsort(importances)[::-1]
-
     topk_idx = indices[:k]
-    X_train_sel = X_train[:, topk_idx]
-    X_test_sel = X_test[:, topk_idx]
+    return X_train[:, topk_idx], X_test[:, topk_idx]
 
-    return X_train_sel, X_test_sel
-
-
-
-
-from typing import Tuple
-import numpy as np
-from numpy.typing import NDArray
 
 
 def select_top_variance_features(
@@ -178,19 +163,21 @@ def select_top_variance_features(
 ) -> Tuple[NDArray, NDArray]:
     """
     Select the top-k features with the highest variance in X_train.
+
     Useful for high-dimensional genomic data where most features are constant.
 
-    Parameters
-    X_train : NDArray
-        Training matrix (n_samples, n_features).
-    X_test : NDArray
-        Test matrix with same number/order of features.
-    k : int
-        Number of highest-variance features to keep.
+    Args:
+        X_train (NDArray):
+            Training matrix (n_samples, n_features).
+        X_test (NDArray):
+            Test matrix with same number/order of features.
+        k (int):
+            Number of highest-variance features to keep.
 
-    Returns
-    Tuple[NDArray, NDArray]
-        (X_train_selected, X_test_selected)
+    Returns:
+        Tuple[NDArray, NDArray]:
+            Tuple containing (X_train_selected, X_test_selected), where each array
+            contains only the k highest-variance features.
     """
 
     if k > X_train.shape[1]:

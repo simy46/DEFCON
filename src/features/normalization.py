@@ -8,7 +8,6 @@ def normalize_data(
 ) -> tuple[NDArray, NDArray]:
     """
     Normalize train and test matrices using StandardScaler.
-
     Args:
         X_train (NDArray): Training feature matrix.
         X_test (NDArray): Test feature matrix.

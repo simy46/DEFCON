@@ -17,12 +17,9 @@ from src.hyperopt.build_hyper_model import build_model
 from src.hyperopt.build_search import build_search
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
-# -----------------------------------
-# Parse command line arguments
-# -----------------------------------
 parser = argparse.ArgumentParser(
     description="Run the full ML pipeline. Example:\n"
-                "  python main.py --config config/model_rf.yaml\n"
+                "  python find_best_params.py --config config/model_rf.yaml\n"
                 "Available model configs:\n"
                 "  - config/model_rf.yaml\n"
                 "  - config/model_svm.yaml\n"
@@ -49,19 +46,13 @@ logger, timestamp = get_logger()
 logger.info(f"Loaded config ({args.config})" + yaml.dump(cfg, sort_keys=False))
 
 
-# -----------------------------------
-# Load training and test data
-# -----------------------------------
-with Timer("Loading training data..."):
+with Timer("Loading training and test data..."):
     X_train, metadata_train, y_train = load_train()
     X_test, metadata_test = load_test()
 
-
-# -----------------------------------
-# Preprocessing
-# -----------------------------------
 with Timer("Preprocessing data..."): 
-    X_train_prep, X_test_prep = apply_preprocessing( # here we assume that the data preprocessing step is optimized
+    # here we assume that the data preprocessing step is optimized
+    X_train_prep, X_test_prep = apply_preprocessing( 
         X_train=X_train, 
         X_test=X_test, 
         y_train=y_train,
@@ -71,45 +62,27 @@ with Timer("Preprocessing data..."):
     )
 
 
-# -----------------------------------
-# Build Model
-# -----------------------------------
-model_cfg = cfg["model"]
-hyperop_cfg = cfg["hyperoptimization"]
-# assert model_cfg["name"] == "random_forest" # we could work on xgboost too
+model_config = cfg["model"]
+hyperop_config = cfg["hyperoptimization"]
 
 
-# -----------------------------------
-# MODEL & HYPERPARAMETER SEARCH SPACE
-# -----------------------------------
-md, search_space = build_model(model_cfg, hyperop_cfg)
+model, search_space = build_model(model_config, hyperop_config)
 
-# -----------------------------------
-# Determine optimization mode
-# -----------------------------------
-mode = cfg["hyperoptimization"]["type"]
 
-# -----------------------------------
-# RandomizedSearch, GridSearch or Optuna
-# -----------------------------------
 search = build_search(
-    model=md,
+    model=model,
     search_space=search_space,
     cfg=cfg,
     X_train=X_train_prep,
     y_train=y_train
 )
 
-# -----------------------------------
-# Run search
-# -----------------------------------
+mode = cfg["hyperoptimization"]["type"]
 if mode in (RANDOM_MODE, GRID_SEARCH_MODE):
     with Timer("Hyperparameter search..."):
         search.fit(X_train_prep, y_train)
-
     best_score = search.best_score_
     best_params = search.best_params_
-
 elif mode == OPTUNA_MODE:
     best_params, best_score = search
 
@@ -118,9 +91,6 @@ logger.info(f"Best score: {best_score}")
 logger.info(f"Best params: {best_params}")
 
 
-# -----------------------------------
-# Save best params back to the config file
-# -----------------------------------
 cfg["model"].update(best_params)
 
 output_file = f"{args.config.replace('.yaml', '')}_best.yaml"
