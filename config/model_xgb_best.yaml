@@ -1,14 +1,14 @@
 model:
   name: xgboost
   booster: gbtree
-  eta: 0.11399759378923058
-  max_depth: 9
-  min_child_weight: 3
-  subsample: 0.826396637200676
-  colsample_bytree: 0.5881750892830347
-  reg_lambda: 10.38732414661673
-  reg_alpha: 1.1427512862220706
-  n_estimators: 1016
+  eta: 0.10638951516952143
+  max_depth: 7
+  min_child_weight: 9
+  subsample: 0.7675651067098845
+  colsample_bytree: 0.5870314251531698
+  reg_lambda: 30.56949278920439
+  reg_alpha: 4.635035012131066
+  n_estimators: 964
   tree_method: auto
   max_bin: 250
   n_jobs: -1
@@ -25,8 +25,8 @@ preprocessing:
     - Isolation source
     - Testing standard
   pca:
-    enabled: false
-    n_components: 300
+    enabled: true
+    n_components: 200
     svd_solver: randomized
   variance_threshold:
     enabled: true
@@ -35,7 +35,7 @@ preprocessing:
     enabled: false
     k: 8000
   select_xgboost_k:
-    enabled: true
+    enabled: false
     k: 200
   select_k_best:
     enabled: false

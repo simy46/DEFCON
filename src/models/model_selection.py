@@ -57,5 +57,6 @@ def build_model(model_cfg):
         random_state=model_cfg.get("random_state", 42),
         eval_metric=model_cfg.get("eval_metric", "logloss")
     )
+    
 
     raise ValueError(f"Unknown model name: {name}")

@@ -34,19 +34,19 @@ preprocessing:
 
   pca:
     enabled: false
-    n_components: 300
+    n_components: 200
     svd_solver: randomized
 
   variance_threshold:
     enabled: true
-    threshold: 1
+    threshold: 0.1
 
   select_variance_k:
     enabled: false
     k: 8000
     
   select_xgboost_k:
-    enabled: true
+    enabled: false
     k: 200
 
   select_k_best:
@@ -56,6 +56,15 @@ preprocessing:
   select_first_k:
     enabled: false
     k: 200000
+
+  lda:
+    enabled: true      
+    mode: shrinkage         # classic | shrinkage | kernel
+    n_components: null 
+    shrinkage_value: auto 
+    kernel: rbf          # rbf | poly | linear; only used if mode: kernel
+    gamma: null      
+
 
 hyperoptimization:
 
