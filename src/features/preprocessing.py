@@ -75,19 +75,7 @@ def apply_preprocessing(
         logger.info(f"After SelectKBest: X_train={X_train.shape}, X_test={X_test.shape}")
 
 
-    # ---------------------------------------------
-    # Select K Best Based On xgBoost (supervised)
-    # ---------------------------------------------
-    if select_xgboost_k["enabled"]:
-        k = select_xgboost_k["k"]
-        logger.info(f"Selecting top {k} most informative features via XGBoost...")
-        X_train, X_test = select_xgboost_k_features(
-            X_train=X_train,
-            y_train=y_train,
-            X_test=X_test,
-            k=k,
-        )
-        logger.info(f"After XGBoost K select: X_train={X_train.shape}, X_test={X_test.shape}")
+
 
 
     # ---------------------------------------------
@@ -139,6 +127,31 @@ def apply_preprocessing(
         pca["enabled"] = False
 
     # ---------------------------------------------
+    # PCA
+    # ---------------------------------------------
+    if pca["enabled"]:
+        n_components = pca["n_components"]
+        svd_solver = pca.get("svd_solver", "randomized")
+        logger.info(f"Applying PCA(n_components={n_components}) ...")
+        X_train, X_test = apply_pca(X_train, X_test, n_components, svd_solver)
+        logger.info(f"After PCA: X_train={X_train.shape}, X_test={X_test.shape}")
+    
+
+    # ---------------------------------------------
+    # Select K Best Based On xgBoost (supervised)
+    # ---------------------------------------------
+    if select_xgboost_k["enabled"]:
+        k = select_xgboost_k["k"]
+        logger.info(f"Selecting top {k} most informative features via XGBoost...")
+        X_train, X_test = select_xgboost_k_features(
+            X_train=X_train,
+            y_train=y_train,
+            X_test=X_test,
+            k=k,
+        )
+        logger.info(f"After XGBoost K select: X_train={X_train.shape}, X_test={X_test.shape}")
+
+    # ---------------------------------------------
     # LDA
     # ---------------------------------------------
     lda_cfg = pp.get("lda", {})
@@ -167,15 +180,7 @@ def apply_preprocessing(
         logger.info(f"After LDA: X_train={X_train.shape}, X_test={X_test.shape}")
 
 
-    # ---------------------------------------------
-    # PCA
-    # ---------------------------------------------
-    if pca["enabled"]:
-        n_components = pca["n_components"]
-        svd_solver = pca.get("svd_solver", "randomized")
-        logger.info(f"Applying PCA(n_components={n_components}) ...")
-        X_train, X_test = apply_pca(X_train, X_test, n_components, svd_solver)
-        logger.info(f"After PCA: X_train={X_train.shape}, X_test={X_test.shape}")
+    
 
     logger.info("Preprocessing complete.")
     return X_train, X_test

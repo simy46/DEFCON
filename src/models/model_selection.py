@@ -3,7 +3,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier # type: ignore
-from config.consts import LOGISTIC_REGRESSION, LINEAR_SVM, RANDOM_FOREST, XGBOOST
+from config.consts import LOGISTIC_REGRESSION, SVM, RANDOM_FOREST, XGBOOST
 
 def build_model(model_cfg):
     name = model_cfg["name"]
@@ -18,13 +18,20 @@ def build_model(model_cfg):
             random_state=model_cfg["random_state"],
         )
 
-    if name == LINEAR_SVM:
-        return LinearSVC(
+    if name == SVM:
+        return SVC(
             C=model_cfg["C"],
-            loss=model_cfg["loss"],
+            kernel='rbf',
+            gamma=model_cfg["gamma"],
+            shrinking=False,
+            probability=False,
+            tol=model_cfg["tol"],
+            class_weight='balanced',
             max_iter=model_cfg["max_iter"],
+            break_ties=False,
             random_state=model_cfg["random_state"],
         )
+        
 
     if name == RANDOM_FOREST:
         return RandomForestClassifier(
@@ -35,7 +42,6 @@ def build_model(model_cfg):
             max_features=model_cfg["max_features"],
             max_depth=model_cfg["max_depth"],
             criterion=model_cfg["criterion"],
-            bootstrap=model_cfg["bootstrap"],
             class_weight=model_cfg["class_weight"],
             random_state=model_cfg["random_state"],
         )

@@ -1,10 +1,13 @@
 model:
-  name: linear_svm
-  C: 1.0
-  loss: hinge
-  max_iter: 5000
-  random_state: 42
+  name: svm
   cv_folds: 5
+  random_state: 42
+
+  C: 0.5
+  gamma: scale
+  probability: false
+  tol: 0.001
+  max_iter: 5000
 
 preprocessing:
   normalize: true
@@ -19,26 +22,58 @@ preprocessing:
       - Testing standard
 
   pca:
-    enabled: true
+    enabled: false
     n_components: 100
     svd_solver: randomized
 
   variance_threshold:
     enabled: true
-    threshold: 0.0005
+    threshold: 1
 
   select_variance_k:
-      enabled: true
+      enabled: false
       k: 10000
   
   select_xgboost_k:
-    enabled: true
+    enabled: false
     k: 20000
 
   select_k_best:
     enabled: false
-    k: 100000
+    k: 200
 
   select_first_k:
     enabled: false
     k: 250000
+
+hyperoptimization:
+
+  type: optuna
+
+  optuna:
+    n_trials: 80
+
+    C:
+    type: float
+    low: 0.01
+    high: 10.0
+    log: true
+
+    gamma:
+      type: float
+      low: 0.00001
+      high: 1.0
+      log: true
+
+    tol:
+      type: float
+      low: 0.00001
+      high: 0.01
+      log: true
+
+    max_iter:
+      type: int
+      low: 1000
+      high: 10000
+
+

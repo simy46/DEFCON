@@ -28,9 +28,10 @@ OUTPUT_DIR = "outputs"
 
 # MODELS
 LOGISTIC_REGRESSION = 'logistic_regression'
-LINEAR_SVM = 'linear_svm'
+SVM = 'svm'
 RANDOM_FOREST = 'random_forest'
 XGBOOST = 'xgboost'
+
 
 # SEARCH MODE
 RANDOM_MODE = 'random'

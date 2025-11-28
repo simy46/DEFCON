@@ -3,7 +3,7 @@ from typing import Dict, Any, Tuple
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
+from sklearn.svm import SVC, LinearSVC
 
 UNWANTED_MODEL_KEYS = {"name", "cv_folds"}
 UNWANTED_SEARCH_KEYS = {"n_iter", "n_trials"}
@@ -11,7 +11,7 @@ UNWANTED_SEARCH_KEYS = {"n_iter", "n_trials"}
 MODEL_FACTORY = {
     "random_forest": RandomForestClassifier,
     "xgboost": XGBClassifier,
-    "logreg": LogisticRegression,
+    "logistic_regression": LogisticRegression,
     "svm": SVC
 }
 
