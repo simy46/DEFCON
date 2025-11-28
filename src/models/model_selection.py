@@ -1,9 +1,9 @@
 from sklearn.calibration import LinearSVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, StackingClassifier 
 from xgboost import XGBClassifier # type: ignore
-from config.consts import LOGISTIC_REGRESSION, SVM, RANDOM_FOREST, XGBOOST
+from config.consts import LOGISTIC_REGRESSION, SVM, RANDOM_FOREST, XGBOOST, STACK
 
 def build_model(model_cfg):
     name = model_cfg["name"]
@@ -12,7 +12,9 @@ def build_model(model_cfg):
         return LogisticRegression(
             solver=model_cfg["solver"],
             penalty=model_cfg["penalty"],
+            class_weight='balanced',
             C=model_cfg["C"],
+            l1_ratio=model_cfg["l1_ratio"],
             max_iter=model_cfg["max_iter"],
             n_jobs=model_cfg["n_jobs"],
             random_state=model_cfg["random_state"],
@@ -24,7 +26,7 @@ def build_model(model_cfg):
             kernel='rbf',
             gamma=model_cfg["gamma"],
             shrinking=False,
-            probability=False,
+            probability=True,
             tol=model_cfg["tol"],
             class_weight='balanced',
             max_iter=model_cfg["max_iter"],
@@ -63,6 +65,40 @@ def build_model(model_cfg):
         random_state=model_cfg.get("random_state", 42),
         eval_metric=model_cfg.get("eval_metric", "logloss")
     )
+
+    if name == "stack":
+        base_lr = build_model(model_cfg["lr"])
+        base_svm = build_model(model_cfg["svm"])
+
+        base_rf = RandomForestClassifier(
+            n_estimators=model_cfg["rf"]["n_estimators"],
+            min_samples_split=model_cfg["rf"]["min_samples_split"],
+            min_samples_leaf=model_cfg["rf"]["min_samples_leaf"],
+            max_features=model_cfg["rf"]["max_features"],
+            max_depth=model_cfg["rf"]["max_depth"],
+            criterion=model_cfg["rf"]["criterion"],
+            bootstrap=model_cfg["rf"]["bootstrap"],
+            class_weight=model_cfg["rf"]["class_weight"],
+            random_state=model_cfg["rf"]["random_state"],
+            n_jobs=model_cfg["rf"]["n_jobs"]
+        )
+
+        meta_model = LogisticRegression(
+            solver="lbfgs",
+            max_iter=5000,
+            class_weight="balanced"
+        )
+
+        return StackingClassifier(
+            estimators=[
+                ('lr', base_lr),
+                ('svm', base_svm),
+                ('rf', base_rf)
+            ],
+            final_estimator=meta_model,
+            stack_method="predict_proba",
+            n_jobs=-1
+        )
     
 
     raise ValueError(f"Unknown model name: {name}")

@@ -3,6 +3,7 @@ import numpy as np
 from numpy.typing import NDArray
 from sklearn.feature_selection import VarianceThreshold, SelectKBest, chi2
 from xgboost import XGBClassifier
+import os
 
 
 # ============================================================
@@ -30,7 +31,8 @@ RANDOM_STATE = 42
 def filter_low_variance_features(
     X_train: NDArray,
     X_test: NDArray,
-    threshold: float
+    threshold: float,
+    data_dir: str = "../../data/"
 ) -> Tuple[NDArray, NDArray]:
     """
     Remove features with variance below a threshold.
@@ -47,9 +49,24 @@ def filter_low_variance_features(
     Tuple[NDArray, NDArray]
         Filtered (X_train, X_test) matrices.
     """
+    os.makedirs(data_dir, exist_ok=True)
+
+    train_path = os.path.join(data_dir, f"X_train_var_{threshold}.npy")
+    test_path = os.path.join(data_dir, f"X_test_var_{threshold}.npy")
+
+    if os.path.exists(train_path) and os.path.exists(test_path):
+        print("Already found a thresholded dataset!")
+        X_train_sel = np.load(train_path)
+        X_test_sel = np.load(test_path)
+        return X_train_sel, X_test_sel
+    
+    print("Applying the threshold")
     selector = VarianceThreshold(threshold=threshold)
     X_train_sel: NDArray = selector.fit_transform(X_train)
     X_test_sel: NDArray = selector.transform(X_test)
+    np.save(train_path, X_train_sel)
+    np.save(test_path, X_test_sel)
+    print("saving thresholded data")
     return X_train_sel, X_test_sel
 
 

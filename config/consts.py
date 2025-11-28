@@ -31,6 +31,7 @@ LOGISTIC_REGRESSION = 'logistic_regression'
 SVM = 'svm'
 RANDOM_FOREST = 'random_forest'
 XGBOOST = 'xgboost'
+STACK = 'stack'
 
 
 # SEARCH MODE
