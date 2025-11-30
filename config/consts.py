@@ -29,6 +29,7 @@ OUTPUT_DIR = "outputs"
 # MODELS
 LOGISTIC_REGRESSION = 'logistic_regression'
 SVM = 'svm'
+LINEAR_SVM = 'linear_svm'
 RANDOM_FOREST = 'random_forest'
 XGBOOST = 'xgboost'
 STACK = 'stack'

@@ -3,7 +3,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier, StackingClassifier 
 from xgboost import XGBClassifier # type: ignore
-from config.consts import LOGISTIC_REGRESSION, SVM, RANDOM_FOREST, XGBOOST, STACK
+from config.consts import LOGISTIC_REGRESSION, SVM, RANDOM_FOREST, XGBOOST, STACK, LINEAR_SVM
 
 def build_model(model_cfg):
     name = model_cfg["name"]
@@ -66,22 +66,53 @@ def build_model(model_cfg):
         eval_metric=model_cfg.get("eval_metric", "logloss")
     )
 
-    if name == "stack":
+    if name == LINEAR_SVM:
+        return LinearSVC(
+        penalty=model_cfg["penalty"],
+        loss=model_cfg["loss"],
+        dual=model_cfg["dual"],
+        tol=model_cfg["tol"],
+        C=model_cfg["C"],
+        fit_intercept=model_cfg["fit_intercept"],
+        intercept_scaling=model_cfg["intercept_scaling"],
+        class_weight=model_cfg["class_weight"],
+        random_state=model_cfg["random_state"],
+        max_iter=model_cfg["max_iter"]
+        )
+
+    if name == STACK:
         base_lr = build_model(model_cfg["lr"])
         base_svm = build_model(model_cfg["svm"])
 
-        base_rf = RandomForestClassifier(
-            n_estimators=model_cfg["rf"]["n_estimators"],
-            min_samples_split=model_cfg["rf"]["min_samples_split"],
-            min_samples_leaf=model_cfg["rf"]["min_samples_leaf"],
-            max_features=model_cfg["rf"]["max_features"],
-            max_depth=model_cfg["rf"]["max_depth"],
-            criterion=model_cfg["rf"]["criterion"],
-            bootstrap=model_cfg["rf"]["bootstrap"],
-            class_weight=model_cfg["rf"]["class_weight"],
-            random_state=model_cfg["rf"]["random_state"],
-            n_jobs=model_cfg["rf"]["n_jobs"]
-        )
+        # base_rf = RandomForestClassifier(
+        #     n_estimators=model_cfg["rf"]["n_estimators"],
+        #     min_samples_split=model_cfg["rf"]["min_samples_split"],
+        #     min_samples_leaf=model_cfg["rf"]["min_samples_leaf"],
+        #     max_features=model_cfg["rf"]["max_features"],
+        #     max_depth=model_cfg["rf"]["max_depth"],
+        #     criterion=model_cfg["rf"]["criterion"],
+        #     bootstrap=model_cfg["rf"]["bootstrap"],
+        #     class_weight=model_cfg["rf"]["class_weight"],
+        #     random_state=model_cfg["rf"]["random_state"],
+        #     n_jobs=model_cfg["rf"]["n_jobs"]
+        # )
+        base_xgb = XGBClassifier(
+            booster=model_cfg["xgboost"]["booster"],
+            eta=model_cfg["xgboost"]["eta"],
+            max_depth=model_cfg["xgboost"]["max_depth"],
+            min_child_weight=model_cfg["xgboost"]["min_child_weight"],
+            subsample=model_cfg["xgboost"]["subsample"],
+            colsample_bytree=model_cfg["xgboost"]["colsample_bytree"],
+            reg_lambda=model_cfg["xgboost"]["reg_lambda"],
+            reg_alpha=model_cfg["xgboost"]["reg_alpha"],
+            n_estimators=model_cfg["xgboost"]["n_estimators"],
+            tree_method=model_cfg["xgboost"]["tree_method"],
+            max_bin=model_cfg["xgboost"]["max_bin"],
+            n_jobs=model_cfg["xgboost"]["n_jobs"],
+            random_state=model_cfg["xgboost"]["random_state"],
+            eval_metric=model_cfg["xgboost"]["eval_metric"],
+            )
+        
 
         meta_model = LogisticRegression(
             solver="lbfgs",
@@ -89,14 +120,16 @@ def build_model(model_cfg):
             class_weight="balanced"
         )
 
+
         return StackingClassifier(
             estimators=[
                 ('lr', base_lr),
                 ('svm', base_svm),
-                ('rf', base_rf)
+                ('xgb', base_xgb)
             ],
             final_estimator=meta_model,
             stack_method="predict_proba",
+            passthrough=True,
             n_jobs=-1
         )
     
