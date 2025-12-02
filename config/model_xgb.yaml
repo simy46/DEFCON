@@ -23,6 +23,7 @@ model:
 
 preprocessing:
   normalize: true
+  normalize_with_mean: false
 
   one_hot_encode:
     enabled: true
@@ -39,18 +40,18 @@ preprocessing:
 
   variance_threshold:
     enabled: true
-    threshold: 0.1
+    threshold: 1
 
   select_variance_k:
     enabled: false
     k: 8000
     
   select_xgboost_k:
-    enabled: false
-    k: 200
+    enabled: true
+    k: 500
 
   select_k_best:
-    enabled: true
+    enabled: false
     k: 200
 
   select_first_k:

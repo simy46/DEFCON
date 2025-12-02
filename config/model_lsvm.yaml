@@ -6,9 +6,9 @@ model:
   penalty: l2
   tol: 0.0001
   loss: squared_hinge
-  C: 0.1
+  C: 0.5
   dual: true
-  max_iter: 5000
+  max_iter: 10000
   fit_intercept: true
   intercept_scaling: 1.0
   class_weight: balanced
@@ -36,16 +36,16 @@ preprocessing:
     threshold: 1
 
   select_variance_k:
-      enabled: true
-      k: 200
+      enabled: false
+      k: 500
   
   select_xgboost_k:
     enabled: false
     k: 20000
 
   select_k_best:
-    enabled: false
-    k: 200
+    enabled: true
+    k: 500
 
   select_first_k:
     enabled: false

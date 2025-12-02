@@ -19,8 +19,8 @@ model:
     C: 0.5
     kernel: rbf
     gamma: scale
-    shrinking: false
-    probability: true
+    shrinking: true      # should be True for stability
+    probability: true    # required for stacking
     tol: 0.001
     max_iter: 5000
     class_weight: balanced
@@ -29,35 +29,36 @@ model:
     random_state: 42
     cv_folds: 5
 
-  rf:
-    n_estimators: 1081
-    min_samples_split: 20
-    min_samples_leaf: 1
-    max_features: sqrt
-    max_depth: 18
-    criterion: entropy
-    bootstrap: false
-    class_weight: balanced_subsample
-    random_state: 42
-    n_jobs: -1
-    
   xgboost:
     booster: gbtree
-    eta: 0.07284597567259705
+    eta: 0.07
     max_depth: 5
     min_child_weight: 7
-    subsample: 0.8570877557023777
-    colsample_bytree: 0.7972002412967291
-    reg_lambda: 5.7203603086848664
-    reg_alpha: 1.01049401176093
-    n_estimators: 903
-    tree_method: auto
+    subsample: 0.86
+    colsample_bytree: 0.80
+    reg_lambda: 5.72
+    reg_alpha: 1.01
+    n_estimators: 900
+    tree_method: hist
     max_bin: 250
     n_jobs: -1
     random_state: 42
     eval_metric: logloss
     cv_folds: 5
 
+  random_forest:
+    name: random_forest
+    n_estimators: 900
+    min_samples_split: 10
+    min_samples_leaf: 2
+    max_features: sqrt
+    max_depth: 15
+    bootstrap: true
+    criterion: entropy
+    class_weight: balanced_subsample
+    random_state: 42
+    n_jobs: -1
+    cv_folds: 5
 
 preprocessing:
   normalize: true
@@ -80,17 +81,17 @@ preprocessing:
     enabled: true
     threshold: 1
 
+  select_k_best:
+    enabled: true
+    k: 400       # <- your chosen 400 best features
+
   select_variance_k:
     enabled: false
     k: 10000
-    
+
   select_xgboost_k:
     enabled: false
     k: 20000
-
-  select_k_best:
-    enabled: true
-    k: 200
 
   select_first_k:
     enabled: false
@@ -98,10 +99,10 @@ preprocessing:
 
   lda:
     enabled: false
-    mode: "shrinkage"   # "classic", "regularized", "shrinkage", "kernel"
+    mode: "shrinkage"
     n_components: 10
     shrinkage_value: null
-    kernel: "rbf"       # "rbf", "poly", "linear", "sigmoid"
-    gamma: 
+    kernel: "rbf"
+    gamma:
     degree: 3
     coef0: 1.0

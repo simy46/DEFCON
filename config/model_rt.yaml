@@ -1,0 +1,67 @@
+model:
+
+  name: randomized_tree
+  cv_folds: 5
+  n_jobs: -1
+
+  n_estimators: 800
+
+  min_samples_split: 10
+  min_samples_leaf: 5
+  max_samples: 0.7
+
+
+  max_features: sqrt
+  max_depth: 12
+
+  criterion: entropy
+
+  class_weight: balanced
+
+  random_state: 42
+
+preprocessing:
+  normalize: false
+
+  one_hot_encode:
+    enabled: true
+    columns:
+      - Isolation type
+      - Location
+      - Isolation source
+      - Testing standard
+
+  pca:
+    enabled: false
+    svd_solver: randomized
+
+  variance_threshold:
+    enabled: true
+    threshold: 0.1
+  
+  select_variance_k:
+    enabled: false
+    k: 10000
+
+  select_xgboost_k:
+    enabled: false
+    k: 8000
+
+  select_k_best:
+    enabled: false
+    k: 200
+
+  select_first_k:
+    enabled: false
+    k: 150000
+
+  lda:
+    enabled: false
+    mode: "shrinkage"   # "classic", "regularized", "shrinkage", "kernel"
+    n_components: 10
+    shrinkage_value: null
+    kernel: null        # "rbf", "poly", "linear", "sigmoid"
+    gamma: null
+    degree: 3
+    coef0: 1.0
+  

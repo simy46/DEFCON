@@ -20,7 +20,7 @@ model:
   random_state: 42
 
 preprocessing:
-  normalize: false
+  normalize: true
 
   one_hot_encode:
     enabled: true
@@ -36,7 +36,7 @@ preprocessing:
 
   variance_threshold:
     enabled: true
-    threshold: 0.01
+    threshold: 1
   
   select_variance_k:
     enabled: false
@@ -48,7 +48,7 @@ preprocessing:
 
   select_k_best:
     enabled: true
-    k: 40000
+    k: 500
 
   select_first_k:
     enabled: false
@@ -127,13 +127,13 @@ hyperoptimization:
 
     subsample:
       type: float
-      low: 0.80
-      high: 1.00
+      low: 0.3
+      high: 0.7
 
     colsample_bytree:
       type: float
-      low: 0.70
-      high: 1.00
+      low: 0.4
+      high: 0.8
 
     lambda:
       type: float

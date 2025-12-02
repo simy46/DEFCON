@@ -51,8 +51,10 @@ def filter_low_variance_features(
     """
     os.makedirs(data_dir, exist_ok=True)
 
-    train_path = os.path.join(data_dir, f"X_train_var_{threshold}.npy")
-    test_path = os.path.join(data_dir, f"X_test_var_{threshold}.npy")
+    threshold_string = str(threshold).replace('.', '_')
+
+    train_path = os.path.join(data_dir, f"X_train_var_{threshold_string}.npy")
+    test_path = os.path.join(data_dir, f"X_test_var_{threshold_string}.npy")
 
     if os.path.exists(train_path) and os.path.exists(test_path):
         print("Already found a thresholded dataset!")

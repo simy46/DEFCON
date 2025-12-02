@@ -33,6 +33,7 @@ LINEAR_SVM = 'linear_svm'
 RANDOM_FOREST = 'random_forest'
 XGBOOST = 'xgboost'
 STACK = 'stack'
+RANDOMIZED_TREE = 'randomized_tree'
 
 
 # SEARCH MODE

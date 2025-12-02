@@ -6,8 +6,8 @@ model:
   C: 0.5
   gamma: scale
   probability: false
-  tol: 0.001
-  max_iter: 5000
+  tol: 0.0001
+  max_iter: 10000
 
 preprocessing:
   normalize: true
@@ -39,8 +39,8 @@ preprocessing:
     k: 20000
 
   select_k_best:
-    enabled: false
-    k: 200
+    enabled: true
+    k: 500
 
   select_first_k:
     enabled: false

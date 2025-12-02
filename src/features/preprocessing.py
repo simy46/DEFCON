@@ -2,9 +2,7 @@ import logging
 import numpy as np
 from numpy.typing import NDArray
 from pandas import DataFrame
-
 from config.consts import LOG_FILE_PREFIX
-
 from .normalization import normalize_data
 from .feature_selection import (
     filter_low_variance_features,

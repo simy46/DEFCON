@@ -16,6 +16,8 @@ data/train.npz
 
 # Distribution / packaging
 .Python
+report/
+submitted/
 build/
 develop-eggs/
 dist/
