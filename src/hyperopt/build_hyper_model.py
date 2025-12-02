@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Dict, Any, Tuple
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from xgboost import XGBClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC, LinearSVC
@@ -12,7 +12,8 @@ MODEL_FACTORY = {
     "random_forest": RandomForestClassifier,
     "xgboost": XGBClassifier,
     "logistic_regression": LogisticRegression,
-    "svm": SVC
+    "svm": SVC,
+    "randomized_tree": ExtraTreesClassifier
 }
 
 

@@ -109,11 +109,6 @@ hyperoptimization:
   optuna:
     n_trials: 80
 
-    eta:
-      type: float
-      low: 0.03
-      high: 0.25
-      log: true
 
     max_depth:
       type: int
