@@ -23,7 +23,11 @@ parser = argparse.ArgumentParser(
                 "Available model configs:\n"
                 "  - config/model_rf.yaml\n"
                 "  - config/model_svm.yaml\n"
-                "  - config/model_xgb.yaml\n",
+                "  - config/model_xgb.yaml\n"
+                "  - config/model_lr.yaml\n"
+                "  - config/model_lsvm.yaml\n"
+                "  - config/model_rt.yaml\n"
+                "  - config/model_stack.yaml\n",
     formatter_class=argparse.RawTextHelpFormatter
 )
 
