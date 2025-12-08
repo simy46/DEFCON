@@ -6,15 +6,15 @@ from config.consts import LOG_FILE_PREFIX
 
 def get_logger():
     logger = logging.getLogger(LOG_FILE_PREFIX)
+    timestamp = datetime.now().strftime("%d-%H-%M-%S")
 
     if logger.hasHandlers():
-        return logger
+        return logger, timestamp
 
     logger.setLevel(logging.INFO)
 
     os.makedirs("logs", exist_ok=True)
 
-    timestamp = datetime.now().strftime("%d-%H-%M-%S")
     log_filename = f"logs/{LOG_FILE_PREFIX}_{timestamp}.log"
 
     formatter = logging.Formatter(
