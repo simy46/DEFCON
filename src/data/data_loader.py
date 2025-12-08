@@ -3,11 +3,30 @@ import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
 from pandas import DataFrame
+from gdown import download as gdown_download
+
 from src.utils.gzip_utils import gunzip_file
-from config.consts import METADATA_TEST_PATH, METADATA_TRAIN_PATH, TEST_GZ_PATH, TEST_NPZ_PATH, TRAIN_GZ_PATH, TRAIN_NPZ_PATH, X_TEST_KEY, X_TRAIN_KEY, Y_TRAIN_KEY
+from config.consts import (
+    METADATA_TEST_PATH,
+    METADATA_TRAIN_PATH,
+    TEST_GZ_PATH,
+    TEST_NPZ_PATH,
+    TRAIN_GZ_PATH,
+    TRAIN_NPZ_PATH,
+    X_TEST_KEY,
+    X_TRAIN_KEY,
+    Y_TRAIN_KEY,
+    TRAIN_DRIVE_ID,
+    TEST_DRIVE_ID,
+)
 
 
-def _ensure_npz(npz_path: str, gz_path: str) -> None:
+def download_from_drive(file_id: str, output_path: str) -> None:
+    url = f"https://drive.google.com/uc?id={file_id}"
+    gdown_download(url, output_path, quiet=False)
+
+
+def _ensure_npz(npz_path: str, gz_path: str, drive_id: str) -> None:
     """
     Ensure NPZ exists; otherwise extract from .gz.
 
@@ -18,27 +37,23 @@ def _ensure_npz(npz_path: str, gz_path: str) -> None:
     Returns:
         None
     """
+
     if os.path.exists(npz_path):
         print(f"[INFO] Found NPZ file: {npz_path}")
         return
 
     print(f"[WARNING] NPZ file missing: {npz_path}")
-    print("[INFO] Decompressing GZIP...")
 
-    if not os.path.exists(gz_path):
-        raise FileNotFoundError(
-            f"Missing GZIP file: {gz_path}\n"
-            f"Cannot restore {npz_path}"
-        )
+    if os.path.exists(gz_path):
+        print("[INFO] Decompressing GZIP...")
+        gunzip_file(gz_path, npz_path)
+        return
 
+    print("[INFO] Downloading GZIP from Google Drive...")
+    download_from_drive(drive_id, gz_path)
+
+    print("[INFO] Decompressing downloaded GZIP...")
     gunzip_file(gz_path, npz_path)
-
-    if not os.path.exists(npz_path):
-        raise RuntimeError(
-            f"[ERROR] Extraction failed: {npz_path} still does not exist."
-        )
-
-    print(f"[INFO] Successfully extracted: {npz_path}")
 
 
 def load_train() -> tuple[NDArray, DataFrame, NDArray]:
@@ -55,7 +70,7 @@ def load_train() -> tuple[NDArray, DataFrame, NDArray]:
             y (np.ndarray): Label vector.
     """
 
-    _ensure_npz(TRAIN_NPZ_PATH, TRAIN_GZ_PATH)
+    _ensure_npz(TRAIN_NPZ_PATH, TRAIN_GZ_PATH, TRAIN_DRIVE_ID)
 
     data = np.load(TRAIN_NPZ_PATH, allow_pickle=True)
 
@@ -80,7 +95,7 @@ def load_test() -> tuple[NDArray, DataFrame]:
             metadata_test (pd.DataFrame): Test metadata.
     """
 
-    _ensure_npz(TEST_NPZ_PATH, TEST_GZ_PATH)
+    _ensure_npz(TEST_NPZ_PATH, TEST_GZ_PATH, TEST_DRIVE_ID)
 
     data = np.load(TEST_NPZ_PATH, allow_pickle=True)
 
