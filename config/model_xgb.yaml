@@ -52,7 +52,7 @@ preprocessing:
 
   select_k_best:
     enabled: false
-    k: 200
+    k: 500
 
   select_first_k:
     enabled: false

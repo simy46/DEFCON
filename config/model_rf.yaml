@@ -20,7 +20,7 @@ model:
   random_state: 42
 
 preprocessing:
-  normalize: true
+  normalize: false
 
   one_hot_encode:
     enabled: true
@@ -36,7 +36,7 @@ preprocessing:
 
   variance_threshold:
     enabled: true
-    threshold: 1
+    threshold: 0.1
   
   select_variance_k:
     enabled: false
@@ -47,8 +47,8 @@ preprocessing:
     k: 8000
 
   select_k_best:
-    enabled: true
-    k: 500
+    enabled: false
+    k: 200
 
   select_first_k:
     enabled: false
